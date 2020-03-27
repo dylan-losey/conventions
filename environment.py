@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import linalg as la
+import copy
 
 
 class Params(object):
@@ -10,7 +11,7 @@ class Params(object):
 		mass = 1.0
 		damper = 1.0
 		timestep = 0.1
-		n_steps = 101
+		n_steps = 21
 		s_0 = [0, 0]
 		F_0 = [0, 0]
 		delta = 0.01
@@ -29,7 +30,7 @@ class Params(object):
 		self.alpha = alpha
 
 
-class Humans(object):
+class Human(object):
 
 	def __init__(self):
 		params = Params()
@@ -53,10 +54,10 @@ class Humans(object):
 		effort, error = 0, 0
 		for idx in xi_s:
 			if idx in xi_z:
-				effort += self.R * xi_z[idx]**2
+				effort += float(self.R * xi_z[idx]**2)
 			e = self.s_star - xi_s[idx]
-			error += np.transpose(e) @ self.Q @ e
-		return float(effort + error)
+			error += float(np.transpose(e) @ self.Q @ e)
+		return effort + error
 
 	def dare(self):
 		P = la.solve_discrete_are(self.Abar, self.B, self.Q, self.R)
