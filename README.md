@@ -71,6 +71,7 @@ This feedback is predefined, and does not change based on the convention.
 The robot is a 1-DoF mass-damper.
 In this setting F = [f<sub>1</sub>, f<sub>2</sub>] has two parameters, and G is a scalar.
 Without loss of generality, we will fix G = +1.
+Hence, in our experiments the convention boiled down to F = [f<sub>1</sub>, f<sub>2</sub>], where the robot chose these two parameters.
 
 # Results
 
@@ -119,3 +120,20 @@ Using the conventions learned above, we compared the **cost with an initial conv
 
 The left plot corresponds to an **optimal human**, and the right plot corresponds to a **procedural human**.
 From these plots, we confirm that optimal, task-dependent conventions make the human's task easier.
+
+## Task Distributions
+
+We've seen that the robot can adapt its convention based on the human and their intended task.
+But what if the human wants to perform more than one task?
+Can we identify a convention that makes a **distribution of tasks** easier for the human to perform?
+
+
+Here we sample from a task distribution.
+The goal position is sampled from U[-1, 1], and the goal velocity is sampled U[1, 2].
+We then identify the **optimal convention** across ~10 sampled tasks.
+
+<img src=results/cost_distribution_opt.png width="49%"/> <img src=results/cost_distribution_pro.png width="49%"/>
+
+Above we plot the **average task cost** using the initial convention and the optimal convention.
+The left plot corresponds to an **optimal human**, and the right plot corresponds to a **procedural human**.
+From these plots, we see that we can identify conventions that not only make a single task easier, but also make distributions of tasks easier to complete.
