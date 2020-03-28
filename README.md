@@ -38,7 +38,7 @@ The human has in mind a cost function they want the robot to minimize. Let's ass
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?J=\int{\|s^*-s(t)\|^2_Q&plus;\|z(t)\|^2_R~dt}" title="J=\int{\|s^*-s(t)\|^2_Q+\|z(t)\|^2_R~dt}" />
 </p>
-The human knows the right task _s*_ and the correct weights *Q* and *R*.
+The human knows the right task _s_ and the correct weights *Q* and *R*.
 
 ### feedback
 
