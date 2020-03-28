@@ -5,9 +5,9 @@ Inspired by our recent work on assistive robots, we want to better understand an
 ## what's a convention?
 
 Let _s_ be the robot state and let _a_ be the robot action. The human provides input _z_, and the **convention**
-
+<p align="center">
 <img src="https://latex.codecogs.com/svg.latex?a&space;=&space;\phi(s,&space;z)" title="a = \phi(s, z)" /> 
-
+</p>
 maps the human's input to a robot action.
 
 ## environment
