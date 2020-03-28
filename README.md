@@ -4,7 +4,7 @@ Inspired by our recent work on assistive robots, we want to better understand an
 
 ## what's a convention?
 
-Let $$s$$ be the robot state and let $$a$$ be the robot action. The human provides input $$z$$, and the *convention* $$a = \phi(s, z)$$ maps the human's input to a robot action.
+Let $$s$$ be the robot state and let $$a$$ be the robot action. The human provides input $$z$$, and the *convention* <img src="https://latex.codecogs.com/svg.latex?a&space;=&space;\phi(s,&space;z)" title="a = \phi(s, z)" /> maps the human's input to a robot action.
 
 ## environment
 
