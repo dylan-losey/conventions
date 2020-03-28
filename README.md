@@ -103,6 +103,8 @@ or whether the **optimal convention depends on the current task(s)**.
 Here we **vary the task**, and then learn the best possible convention for each task.
 The corresponding code is **task_test.py**.
 
+![alt-text-1](results/conventions_vs_task_opt.png "title-1") | ![alt-text-2](results/conventions_vs_task_pro.png "title-2")
+
 <div class="container">
     <div style="float:left;width:200">
 	    <img src=results/conventions_vs_task_opt.png>
