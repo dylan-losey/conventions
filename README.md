@@ -103,4 +103,4 @@ or whether the **optimal convention depends on the current task(s)**.
 Here we **vary the task**, and then learn the best possible convention for each task.
 The corresponding code is **task_test.py**.
 
-<img src=results/conventions_vs_task_opt.png width="300"/> <img src=results/conventions_vs_task_pro.png width="200"/>
+<img src=results/conventions_vs_task_opt.png width="40%"/> <img src=results/conventions_vs_task_pro.png width="200"/>
