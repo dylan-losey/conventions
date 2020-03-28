@@ -104,3 +104,18 @@ Here we **vary the task**, and then learn the best possible convention for each 
 The corresponding code is **task_test.py**.
 
 <img src=results/conventions_vs_task_opt.png width="49%"/> <img src=results/conventions_vs_task_pro.png width="49%"/>
+
+Above we plot **the optimal convention F** as a function of **the task**.
+The left plot corresponds to an **optimal human**, and the right plot corresponds to a **procedural human**.
+Across all of the tasks, the human had the same goal position --- we varied the goal velocity that the human wanted.
+From these plots, it is clear that the optimal convention is task dependent.
+
+
+A natural follow-up question is whether these optimal conventions are actually useful.
+We want to confirm that the optimal convention **makes the task easier for the human**.
+Using the conventions learned above, we compared the **cost with an initial convention** to the **cost with our optimal convention**.
+
+<img src=results/cost_improvement_opt.png width="49%"/> <img src=results/cost_improvement_pro.png width="49%"/>
+
+The left plot corresponds to an **optimal human**, and the right plot corresponds to a **procedural human**.
+From these plots, we confirm that optimal, task-dependent conventions make the human's task easier.
