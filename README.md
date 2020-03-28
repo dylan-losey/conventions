@@ -93,3 +93,21 @@ Above we plot **the cost J** as a function of **the convention F**.
 This plot was generated with a **optimal human** that has in mind a fixed task, where they want to reach s* = [1, 0].
 The black dot corresponds to the global minima over the tested set of F.
 This plot suggests that J is indeed convex in F: the robot can adapt its convention without worrying about local solutions.
+
+## Task Dependency
+
+The robot uses conventions to change its dynamics so that tasks are easier for the human.
+It is not yet clear whether there is a single convention that the robot should always use,
+or whether the **optimal convention depends on the current task(s)**.
+
+Here we **vary the task**, and then learn the best possible convention for each task.
+The corresponding code is **task_test.py**.
+
+<div class="container">
+    <div style="float:left;width:49%">
+	    <img src=results/conventions_vs_task_opt.png>
+    </div>
+    <div style="float:right;width:49%">
+	    <img src=results/conventions_vs_task_pro.png>
+    </div>
+</div>
