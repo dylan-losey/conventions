@@ -4,6 +4,13 @@ from scipy import linalg as la
 import copy
 
 
+def query(human, robot, control, F):
+    robot.convention(F)
+    human.convention(F)
+    xi_s, xi_z = robot.rollout(control)
+    return human.cost(xi_s, xi_z)
+
+
 class Params(object):
 
 	def __init__(self):
@@ -12,11 +19,11 @@ class Params(object):
 		damper = 1.0
 		timestep = 0.1
 		n_steps = 21
-		s_0 = [0, 0]
-		F_0 = [0, 0]
+		s_0 = [0.0, 0.0]
+		F_0 = [0.0, 0.0]
 		delta = 0.01
-		alpha = 0.1
-		K_pro = [1, 0.1]
+		alpha = 0.5
+		K_pro = [1.0, 0.1]
 
 		self.n_steps = n_steps
 		self.s_0 = np.reshape(np.asarray(s_0), (2, 1))
@@ -38,7 +45,7 @@ class Human(object):
 		self.B = params.B
 		self.Q = params.Q
 		self.R = params.R
-		self.Abar = params.A
+		self.Abar = params.A + params.B @ params.F_0
 		self.K_pro = params.K_pro
 		self.K_opt = self.dare()
 		self.s_star = None
