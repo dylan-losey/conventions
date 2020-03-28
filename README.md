@@ -104,10 +104,10 @@ Here we **vary the task**, and then learn the best possible convention for each 
 The corresponding code is **task_test.py**.
 
 <div class="container">
-    <div style="float:left;width:49%">
+    <div style="float:left;width:200">
 	    <img src=results/conventions_vs_task_opt.png>
     </div>
-    <div style="float:right;width:49%">
+    <div style="float:right;width:200">
 	    <img src=results/conventions_vs_task_pro.png>
     </div>
 </div>
