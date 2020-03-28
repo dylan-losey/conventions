@@ -131,6 +131,7 @@ Can we identify a convention that makes a **distribution of tasks** easier for t
 Here we sample from a task distribution.
 The goal position is sampled from U[-1, 1], and the goal velocity is sampled U[1, 2].
 We then identify the **optimal convention** across ~10 sampled tasks.
+The corresponding code is **distribution_test.py**.
 
 <img src=results/cost_distribution_opt.png width="49%"/> <img src=results/cost_distribution_pro.png width="49%"/>
 
