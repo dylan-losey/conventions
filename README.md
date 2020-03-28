@@ -137,3 +137,15 @@ We then identify the **optimal convention** across ~10 sampled tasks.
 Above we plot the **average task cost** using the initial convention and the optimal convention.
 The left plot corresponds to an **optimal human**, and the right plot corresponds to a **procedural human**.
 From these plots, we see that we can identify conventions that not only make a single task easier, but also make distributions of tasks easier to complete.
+
+## Consistent Humans
+
+The above tests were performed with both an **optimal human** and a **procedural human**.
+We've found that robots can learn effective conventions for each type of human.
+Put another way, the human does not need to try to optimize their response to the robot's convention:
+so long as the human's response is **consistent**, the robot can adapt and improve.
+
+
+Let's define consistency. <i>Given a fixed convention F and task s*, the human reports cost J ~ N(J*, sigma).
+The smaller sigma is, the more consistent the human is.</i>
+Both our optimal and procedural humans were completely consistent, since they had a one-to-one mapping from F and s* to J.
