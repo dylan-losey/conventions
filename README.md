@@ -71,3 +71,19 @@ This feedback is predefined, and does not change based on the convention.
 The robot is a 1-DoF mass-damper.
 In this setting F = [f<sub>1</sub>, f<sub>2</sub>] has two parameters, and G is a scalar.
 Without loss of generality, we will fix G = +1.
+
+# Results
+
+## Convexity
+
+We want to identify the **optimal convention** F* that will minimize the human's cost.
+But as the robot changes its convention to adapt to the human, the human also adapts to the robot.
+In the worse case scenario, this mutual adaptation may lead to a local minima:
+for instance, the human may never be able to convey their desired actions because they are mapped to expensive inputs.
+
+Here we ask whether the process of finding the optimal convention is **convex**.
+The corresponding code is **convex_test.py**.
+
+<p align="center">
+<img src=results/convex_test_opt.png>
+</p>
