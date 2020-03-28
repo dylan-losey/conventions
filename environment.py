@@ -22,7 +22,7 @@ class Params(object):
 		s_0 = [0.0, 0.0]
 		F_0 = [0.0, 0.0]
 		delta = 0.01
-		alpha = 0.5
+		alpha = 1
 		K_pro = [1.0, 0.1]
 
 		self.n_steps = n_steps
