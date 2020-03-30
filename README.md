@@ -150,3 +150,9 @@ so long as the human's response is **consistent**, the robot can adapt and impro
 Let's define consistency. <i>Given a fixed convention F and task s*, the human reports cost J ~ N(J*, sigma).
 The smaller sigma is, the more consistent the human is.</i>
 Both our optimal and procedural humans were completely consistent, since they had a one-to-one mapping from F and s* to J.
+
+# Next Steps
+
+ - Insight: conventions define the relationship between human inputs and robot outputs
+ - Look at a very different environment, such as correctly identifying a photo from its description
+ - Conventions that evolve in scale, such as pressing up indicating open the door
