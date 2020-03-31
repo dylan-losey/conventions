@@ -156,3 +156,9 @@ Both our optimal and procedural humans were completely consistent, since they ha
  - Insight: conventions define the relationship between human inputs and robot outputs
  - Look at a very different environment, such as correctly identifying a photo from its description
  - Conventions that evolve in scale, such as pressing up indicating open the door
+
+## Human with Latent State
+
+We started looking at a human whose behavior is directly influenced by the robot.
+Previously, we had the optimal human.
+We found that this new human can cause the robot's learning to become unstable. 

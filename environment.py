@@ -39,44 +39,53 @@ class Params(object):
 
 class Human(object):
 
-	def __init__(self):
-		params = Params()
-		self.A = params.A
-		self.B = params.B
-		self.Q = params.Q
-		self.R = params.R
-		self.Abar = params.A + params.B @ params.F_0
-		self.K_pro = params.K_pro
-		self.K_opt = self.dare()
-		self.s_star = None
+    def __init__(self):
+        params = Params()
+        self.A = params.A
+        self.B = params.B
+        self.Q = params.Q
+        self.R = params.R
+        self.Abar = params.A + params.B @ params.F_0
+        self.K_pro = params.K_pro
+        self.K_opt = self.dare()
+        self.K_react = copy.deepcopy(params.K_pro)
+        self.s_star = None
 
-	def task(self, s_star):
-		self.s_star = np.reshape(np.asarray(s_star), (2, 1))
+    def task(self, s_star):
+    	self.s_star = np.reshape(np.asarray(s_star), (2, 1))
 
-	def convention(self, F):
-		self.Abar = self.A + self.B @ F
-		self.K_opt = self.dare()
+    def react(self, error):
+        scale = 0.25*np.tanh(-2.0 * (error - 1.0)) + 0.75
+        self.K_react = copy.deepcopy(self.K_pro) * scale
+        print(scale)
 
-	def cost(self, xi_s, xi_z):
-		effort, error = 0, 0
-		for idx in xi_s:
-			if idx in xi_z:
-				effort += float(self.R * xi_z[idx]**2)
-			e = self.s_star - xi_s[idx]
-			error += float(np.transpose(e) @ self.Q @ e)
-		return effort + error
+    def convention(self, F):
+    	self.Abar = self.A + self.B @ F
+    	self.K_opt = self.dare()
 
-	def dare(self):
-		P = la.solve_discrete_are(self.Abar, self.B, self.Q, self.R)
-		denominator = 1.0 / (self.R + self.B[1]**2 * P[1, 1])
-		numerator = np.transpose(self.B) @ P @ self.Abar
-		return denominator * numerator
+    def cost(self, xi_s, xi_z):
+    	effort, error = 0, 0
+    	for idx in xi_s:
+    		if idx in xi_z:
+    			effort += float(self.R * xi_z[idx]**2)
+    		e = self.s_star - xi_s[idx]
+    		error += float(np.transpose(e) @ self.Q @ e)
+    	return effort + error
 
-	def control_pro(self, s):
-		return self.K_pro @ (self.s_star - s)
+    def dare(self):
+    	P = la.solve_discrete_are(self.Abar, self.B, self.Q, self.R)
+    	denominator = 1.0 / (self.R + self.B[1]**2 * P[1, 1])
+    	numerator = np.transpose(self.B) @ P @ self.Abar
+    	return denominator * numerator
 
-	def control_opt(self, s):
-		return self.K_opt @ (self.s_star - s)
+    def control_pro(self, s):
+    	return self.K_pro @ (self.s_star - s)
+
+    def control_opt(self, s):
+    	return self.K_opt @ (self.s_star - s)
+
+    def control_react(self, s):
+    	return self.K_react @ (self.s_star - s)
 
 
 class Robot(object):

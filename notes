@@ -1,0 +1,10 @@
+noisy humans
+compress latent space
+initially z inputs are a certain length, and over time they are compressed to shorter inputs
+reference game
+information theory
+are the settings the same?
+and if not, what is different?
+what we assume about the other agent
+human updates their policy in a low-DoF way
+changing conventions for the human agent, do they have a way to update z
