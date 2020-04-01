@@ -13,28 +13,29 @@ def query(human, robot, control, F):
 
 class Params(object):
 
-	def __init__(self):
+    def __init__(self):
 
-		mass = 1.0
-		damper = 1.0
-		timestep = 0.1
-		n_steps = 21
-		s_0 = [0.0, 0.0]
-		F_0 = [0.0, 0.0]
-		delta = 0.01
-		alpha = 0.1
-		K_pro = [1.0, 0.1]
+        mass = 1.0
+        damper = 1.0
+        timestep = 0.01
+        n_steps = 21
+        s_0 = [0.0, 0.0]
+        F_0 = [0.0, 0.0]
+        delta = 0.01
+        alpha = 0.1
+        K_pro = [1.0, 0.1]
 
-		self.n_steps = n_steps
-		self.s_0 = np.reshape(np.asarray(s_0), (2, 1))
-		self.F_0 = np.reshape(np.asarray(F_0), (1, 2))
-		self.K_pro = np.reshape(np.asarray(K_pro), (1, 2))
-		self.A = np.array([[1, timestep], [0, 1 - timestep * damper/mass]])
-		self.B = np.array([[0], [timestep / mass]])
-		self.Q = np.array([[10, 0], [0, 1]])
-		self.R = 1.0
-		self.delta = delta
-		self.alpha = alpha
+        self.n_steps = n_steps
+        self.timestep = timestep
+        self.s_0 = np.reshape(np.asarray(s_0), (2, 1))
+        self.F_0 = np.reshape(np.asarray(F_0), (1, 2))
+        self.K_pro = np.reshape(np.asarray(K_pro), (1, 2))
+        self.A = np.array([[0, 1], [0, - damper/mass]])
+        self.B = np.array([[0], [1 / mass]])
+        self.Q = np.array([[10, 0], [0, 1]])
+        self.R = 1.0
+        self.delta = delta
+        self.alpha = alpha
 
 
 class Human(object):
@@ -90,39 +91,40 @@ class Human(object):
 
 class Robot(object):
 
-	def __init__(self):
-		params = Params()
-		self.A = params.A
-		self.B = params.B
-		self.F = params.F_0
-		self.n_steps = params.n_steps
-		self.s_0 = params.s_0
+    def __init__(self):
+    	params = Params()
+    	self.A = params.A
+    	self.B = params.B
+    	self.F = params.F_0
+    	self.n_steps = params.n_steps
+    	self.s_0 = params.s_0
 
-	def convention(self, F):
-		self.F = copy.deepcopy(F)
+    def convention(self, F):
+    	self.F = copy.deepcopy(F)
 
-	def dynamics(self, s, z):
-		return (self.A + self.B @ self.F) @ s + self.B @ z
+    def dynamics(self, s, z):
+        s1 = s + ((self.A + self.B @ self.F) @ s + self.B @ z) * 0.01
+        return s1
 
-	def rollout(self, control):
-		xi_s, xi_z, s = {}, {}, self.s_0
-		for idx in range(self.n_steps - 1):
-			z = control(s)
-			s_next = self.dynamics(s, z)
-			xi_z[idx], xi_s[idx], s = z, copy.deepcopy(s), s_next
-		xi_s[self.n_steps - 1] = s
-		return xi_s, xi_z
+    def rollout(self, control):
+    	xi_s, xi_z, s = {}, {}, self.s_0
+    	for idx in range(self.n_steps - 1):
+    		z = control(s)
+    		s_next = self.dynamics(s, z)
+    		xi_z[idx], xi_s[idx], s = z, copy.deepcopy(s), s_next
+    	xi_s[self.n_steps - 1] = s
+    	return xi_s, xi_z
 
-	def plot_position(self, xi_s):
-		time = np.linspace(0, 1, self.n_steps)
-		position = []
-		for key in xi_s:
-		    position.append(float(xi_s[key][0]))
-		plt.plot(time, position)
+    def plot_position(self, xi_s):
+    	time = np.linspace(0, 1, self.n_steps)
+    	position = []
+    	for key in xi_s:
+    	    position.append(float(xi_s[key][0]))
+    	plt.plot(time, position)
 
-	def plot_input(self, xi_z):
-		time = np.linspace(0, 1, self.n_steps)
-		input = []
-		for key in xi_z:
-		    input.append(float(xi_z[key]))
-		plt.plot(time[:-1], input)
+    def plot_input(self, xi_z):
+    	time = np.linspace(0, 1, self.n_steps)
+    	input = []
+    	for key in xi_z:
+    	    input.append(float(xi_z[key]))
+    	plt.plot(time[:-1], input)

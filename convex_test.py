@@ -8,7 +8,7 @@ from matplotlib import cm
 human = Human()
 robot = Robot()
 
-control = human.control_opt
+control = human.control_pro
 s_star = [1, 0]
 human.task(s_star)
 
