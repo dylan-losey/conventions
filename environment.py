@@ -17,7 +17,7 @@ class Params(object):
 
         mass = 1.0
         damper = 1.0
-        timestep = 0.01
+        timestep = 0.1
         n_steps = 21
         s_0 = [0.0, 0.0]
         F_0 = [0.0, 0.0]
@@ -26,12 +26,11 @@ class Params(object):
         K_pro = [1.0, 0.1]
 
         self.n_steps = n_steps
-        self.timestep = timestep
         self.s_0 = np.reshape(np.asarray(s_0), (2, 1))
         self.F_0 = np.reshape(np.asarray(F_0), (1, 2))
         self.K_pro = np.reshape(np.asarray(K_pro), (1, 2))
-        self.A = np.array([[0, 1], [0, - damper/mass]])
-        self.B = np.array([[0], [1 / mass]])
+        self.A = np.array([[1, timestep], [0, 1-timestep*damper/mass]])
+        self.B = np.array([[0], [timestep / mass]])
         self.Q = np.array([[10, 0], [0, 1]])
         self.R = 1.0
         self.delta = delta
@@ -49,16 +48,10 @@ class Human(object):
         self.Abar = params.A + params.B @ params.F_0
         self.K_pro = params.K_pro
         self.K_opt = self.dare()
-        self.K_react = copy.deepcopy(params.K_pro)
         self.s_star = None
 
     def task(self, s_star):
     	self.s_star = np.reshape(np.asarray(s_star), (2, 1))
-
-    def react(self, error):
-        scale = 0.25*np.tanh(-2.0 * (error - 1.0)) + 0.75
-        self.K_react = copy.deepcopy(self.K_pro) * scale
-        print(scale)
 
     def convention(self, F):
     	self.Abar = self.A + self.B @ F
@@ -85,9 +78,6 @@ class Human(object):
     def control_opt(self, s):
     	return self.K_opt @ (self.s_star - s)
 
-    def control_react(self, s):
-    	return self.K_react @ (self.s_star - s)
-
 
 class Robot(object):
 
@@ -103,8 +93,7 @@ class Robot(object):
     	self.F = copy.deepcopy(F)
 
     def dynamics(self, s, z):
-        s1 = s + ((self.A + self.B @ self.F) @ s + self.B @ z) * 0.01
-        return s1
+        return (self.A + self.B @ self.F) @ s + self.B @ z
 
     def rollout(self, control):
     	xi_s, xi_z, s = {}, {}, self.s_0
