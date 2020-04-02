@@ -4,104 +4,94 @@ from scipy import linalg as la
 import copy
 import math
 
-# Abar = A + B @ (F - K)
-# Bbar = A + B @ F
-# e(t) = exp(Abar * t) * e(0) - (exp(Abar * t) - eye(2)) * Abar^{-1} * Bbar * s_star
+
+# 1DoF system
+# Abar = A + B * (F - K)
+# Bbar = A + B * F
+# e(t) = exp(Abar * t) * e(0) - Bbar / Abar * (exp(Abar * t) - 1) * s_star
 
 
-# s = [x, \dot{x}, x* - x, \dot{x}* - \dot{x}]
-# Abar = A + B * (F*C1 + K*C2)
-# s(t) = exp(Abar * t) * s(0)
+# the matrix system falls apart because we have to take the derivative of
+# a matrix exponential wrt that matrix
 
-# Q = C2' * q * C2
-# R = C2'*K'* r *K*C2
-# M = Q + R
-# J = \int s(t)'*M*s(t) dt
-# J = \int s(0)' * exp(Abar * t)' * M * exp(Abar * t) * s(0)
-
-
-# run into problems differentiating J wrt F, mostly bc we have to differentiate
-# wrt a matrix...
+# the scalar system reaches a closed form derivative for dJ(t) / dF, but
+# it is really ugly and needs an equation solver.
 
 
 # time settings
 timestep = 0.001
-T = 2.0
-n_steps = int(T / timestep) + 1
-time = []
+T = 5.0
+n_steps, time = int(T / timestep) + 1, []
 for idx in range(n_steps):
     time.append(idx * timestep)
 
 # convention settings
-F = np.array([[0.0, 0.0]])
-K = np.array([[1.0, 0.1]])
+F = 0.0
+K = 1.0
 
 # dynamic settings
-mass = 1.0
-damper = 1.0
-A = np.array([[0, 1, 0, 0],[0, -damper/mass, 0, 0],[0, -1, 0, 0],[0, damper/mass, 0, 0]])
-B = np.array([[0], [1/mass], [0], [-1/mass]])
-C1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])
-C2 = np.array([[0, 0, 1, 0], [0, 0, 0, 1]])
-Abar = A + B @ (F@C1 + K@C2)
+A = 0
+B = 1.0
+Abar = A + B * (F - K)
+Bbar = A + B * F
 
 # cost settings
-q = np.array([[10.0, 0], [0, 1.0]])
-r = 1.0
-Q = np.transpose(C2) @ q @ C2
-R = np.transpose(C2) @ np.transpose(K) * r * K @ C2
-M = Q + R
+Q = 10.0
+R = 1.0
 
 # task settings
-s_0 = np.array([[0], [0], [1.0], [0.0]])
+s_0 = 0.0
+s_star = 1.0
+e_0 = s_star - s_0
 
 
 def dynamics(s):
-    sdot = Abar @ s
+    z = K * (s_star - s)
+    sdot = (A + B * F) * s + B * z
     return s + sdot * timestep
 
 def rollout():
-    xi, s = [], copy.deepcopy(s_0)
+    xi, s = [], s_0
     for idx in range(n_steps):
-        xi.append([s[0,0],s[1,0],s[2,0],s[3,0]])
+        xi.append(s)
         s = dynamics(s)
     return xi
 
-def EoM(Abar, t):
-    return la.expm(Abar * t) @ s_0
+def EoM(Abar, Bbar, t):
+    return math.exp(Abar * t) * e_0 - Bbar / Abar * (math.exp(Abar * t) - 1) * s_star
 
-def cost(Abar):
-    J = 0
-    for t in time:
-        s = EoM(Abar, t)
-        J += float(np.transpose(s) @ M @ s * timestep)
-    return J
+def cost(e, t):
+    return (Q + K**2 * R) * e**2
 
-def numerical_der():
+def numerical_der(t):
     eta = 0.01
-    F1p = F + np.array([[eta, 0.0]])
-    F1n = F + np.array([[-eta, 0.0]])
-    F2p = F + np.array([[0.0, eta]])
-    F2n = F + np.array([[0.0, -eta]])
-    Abar1p = A + B @ (F1p@C1 + K@C2)
-    Abar1n = A + B @ (F1n@C1 + K@C2)
-    Abar2p = A + B @ (F2p@C1 + K@C2)
-    Abar2n = A + B @ (F2n@C1 + K@C2)
-    c1p = cost(Abar1p)
-    c1n = cost(Abar1n)
-    c2p = cost(Abar2p)
-    c2n = cost(Abar2n)
-    return np.array([c1p - c1n, c2p - c2n]) * 0.5 / eta
+    Fp = F + eta
+    Fn = F - eta
+    Abarp, Bbarp = A + B * (Fp - K), A + B * Fp
+    Abarn, Bbarn = A + B * (Fn - K), A + B * Fn
+    cp = cost(EoM(Abarp, Bbarp, t), t)
+    cn = cost(EoM(Abarn, Bbarn, t), t)
+    return (cp - cn) * 0.5 / eta
 
-print(numerical_der())
+def closed_der(Abar, Bbar, t):
+    c1 = 2.0 * (Q + K**2 * R)
+    e = math.exp(Abar*t)*e_0 - Bbar/Abar*(math.exp(Abar*t) - 1)*s_star
+    d1 = B*t*math.exp(Abar*t) * (e_0 - Bbar/Abar*s_star)
+    d2 = B**2*K*s_star/Abar**2 * (math.exp(Abar*t) - 1)
+    return c1 * e * (d1 + d2)
+
+
 
 xi = rollout()
 plt.plot(time, xi)
 
 xip = []
 for t in time:
-    s = EoM(Abar, t)
-    xip.append([s[0,0],s[1,0],s[2,0],s[3,0]])
+    e = EoM(Abar, Bbar, t)
+    xip.append(s_star - e)
 
 plt.plot(time, xip, '--')
 plt.show()
+
+print(numerical_der(4.0))
+print(closed_der(Abar, Bbar, 4.0))
