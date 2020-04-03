@@ -204,3 +204,15 @@ If the robot has an **accurate model** of how the human changes their convention
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}-\Big(\frac{\partial&space;J}{\partial&space;\phi}\Big)^{&plus;}~\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}-\Big(\frac{\partial J}{\partial \phi}\Big)^{+}~\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
  </p>
+
+# To Write Up
+
+ - Got closed form expression (kind of), not promising
+ - Created 2-DoF environment with F and G
+ - Tested with human that learns rotation with robot
+ - Tested with human who works less as robot gets more accurate
+ - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.
+ - Went back to first environment and see mutual adaptation instability
+ - became unstable for lower masses, where change in human force had big impact
+ - what types of human models/learning cause this instability?
+ - need to more clearly formulate this problem
