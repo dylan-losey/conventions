@@ -2,51 +2,76 @@
 
 Inspired by our recent work on assistive robots, we want to better understand and formulate how conventions are formed during human-robot interaction.
 
-## What's A Convention?
+## What Are Conventions?
 
-Let s be the robot state and let a be the robot action. The human provides input z, and the **convention**:
+Let s be the robot state and let a be the robot action. The human provides input z, and the **robot convention** is:
+
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?a&space;=&space;\phi(s,&space;z)" title="a = \phi(s, z)" />
+<img src="https://latex.codecogs.com/gif.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
 </p>
-maps the human's input to a robot action.
 
-## Environment
+The human has in mind a task s* (e.g., a goal state). Let the **human convention** be:
 
-### linear dynamical system
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
+</p>
 
-Let's focus on a robot with dynamics:
+## Environments
+
+### Linear Dynamic Systems
+
+Let's focus on robots with dynamics:
+
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?\dot{s}&space;=&space;As&space;&plus;&space;Ba" title="\dot{s} = As + Ba" />
 </p>
-where A and B are constant matrices that capture the physical properties of the system (e.g., mass, damping, etc.). The robot takes action a and observes state s.
 
+where A and B are constant matrices that capture the physical properties of the system. The robot takes action a and observes state s.
 
-Here we will define the **convention** as a linear funtion of the state and input:
+### Robot Convention
+
+Here we will define the **robot convention** as a linear funtion of the state and input:
+
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?a&space;=&space;\phi(s,&space;a)&space;=&space;Fs&space;&plus;&space;Gz" title="a = \phi(s, a) = Fs + Gz" />
 </p>
-where F and G are constant matrices that capture the convention.
 
+where *F* and *G* are constant matrices that capture the convention.
 
-Putting together these equations, we obtain the overall robot dynamics:
+### Human Convention
+
+Drawing from LQR theory, we define the **human convention** as a feedback controller:
+
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?\dot{s}=(A&plus;BF)s&plus;(BG)z" title="\dot{s}=(A+BF)s+(BG)z" />
+<img src="https://latex.codecogs.com/gif.latex?z=\eta&space;R(\theta)K(s^*-s)" title="z=\eta R(\theta)K(s^*-s)" />
 </p>
-Intuitively, the convention changes the robot's dynamics to make it easier for the human to control.
 
-### quadratic cost function
+We let *eta* be a scalar that affects magnitude, *R(theta)* is a rotation matrix, and *K* is the feedback gain.
+
+### Closed-Loop Dynamics
+
+Putting together all of the equations we outlined above, we find the following closed loop dynamics:
+
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\dot{s}=\bar{A}s&plus;\bar{B}(s^*-s)" title="\dot{s}=\bar{A}s+\bar{B}(s^*-s)" />
+</p>
+
+where *\bar{A}* and *\bar{B}* are linear matrices formed from the human and robot conventions.
+
+### Quadratic Cost Function
 
 The human has in mind a cost function they want the robot to minimize. Let's assume that this cost function combines error and effort:
+
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?J=\int{\|s^*-s(t)\|^2_Q&plus;\|z(t)\|^2_R~dt}" title="J=\int{\|s^*-s(t)\|^2_Q+\|z(t)\|^2_R~dt}" />
 </p>
+
 The human knows the right task s* and the correct weights Q and R.
 
-### feedback
+### Feedback
 
 At the end of each task, we assume that the human reports their total cost J to the robot.
-We also assume that the human can directly observe the convention that the robot is using.
-In other words, the human knows both F and G.
+We also assume that neither the human nor robot change their convention **within** a task.
 
 ## Experimental Setup
 
