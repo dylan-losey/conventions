@@ -87,7 +87,7 @@ Both the human and robot conventions affect the overall task performance: <img s
 Let's look at how *J* changes across episodes as the human and robot adapt their conventions:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?\frac{dJ}{dt}=\frac{\partial&space;J}{\partial&space;\phi}\cdot\dot{\phi}&plus;\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\phi}" title="\frac{dJ}{dt}=\frac{\partial J}{\partial \phi}\cdot\dot{\phi}+\frac{\partial J}{\partial \psi}\cdot\dot{\phi}" />
+<img src="https://latex.codecogs.com/svg.latex?\frac{dJ}{dt}=\frac{\partial&space;J}{\partial&space;\phi}\cdot\dot{\phi}&plus;\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\frac{dJ}{dt}=\frac{\partial J}{\partial \phi}\cdot\dot{\phi}+\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
 </p>
 
 Here the time derivatives *\dot{\phi}(t)* and *\dot{psi}(t)* capture how the human and robot **adapt** their convention between episodes. We **directly** control how the robot convention changes, while we --- at best --- **indirectly** control how the the human convention changes.
