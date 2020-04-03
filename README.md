@@ -10,11 +10,13 @@ Let s be the robot state and let a be the robot action. The human provides input
 <img src="https://latex.codecogs.com/svg.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
 </p>
 
-The human has in mind a task s* (e.g., a goal state). Let the **human convention** be:
+The human has in mind a task s* (e.g., a goal state), which they think about when providing inputs. Let the **human convention** be:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
 </p>
+
+Together the human and robot conventions define the overall process from *(task, observation)* to action.
 
 ## Environment
 
@@ -53,10 +55,10 @@ We let *eta* be a scalar that affects magnitude, *R(theta)* is a rotation matrix
 Putting together all of the equations we outlined above, we find the following closed loop dynamics:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?\dot{s}=\bar{A}s&plus;\bar{B}(s^*-s)" title="\dot{s}=\bar{A}s+\bar{B}(s^*-s)" />
+<img src="https://latex.codecogs.com/svg.latex?\dot{s}=\mathbb{A}s&plus;\mathbb{B}(s^*-s)" title="\dot{s}=\mathbb{A}s+\mathbb{B}(s^*-s)" />
 </p>
 
-where *\bar{A}* and *\bar{B}* are linear matrices formed from the human and robot conventions.
+where big *A* and *B* are linear matrices formed from the human and robot conventions.
 
 ### Quadratic Cost Function
 
@@ -71,32 +73,28 @@ The human knows the right task s* and the correct weights Q and R.
 ### Feedback
 
 At the end of each task, we assume that the human reports their total cost J to the robot.
-We also assume that neither the human nor robot change their convention **within** a task.
+We also assume that neither the human nor robot change their convention **within** a task (i.e., during an episode).
 
 ## Mutual Adaptation
 
-### Relating Conventions to Cost
+Mutual adaptation here refers to cases where the human robot conventions **evolve** over repeated interactions.
 
-Both the human and robot conventions affect the overall task performance:
+### Changing Conventions
 
-<p align="center">
-<img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" />
-</p>
-
-where *t* is the current **iteration**. Each iteration corresponds to a rollout of a single task.
+Both the human and robot conventions affect the overall task performance: <img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" /> where *t* is the current **episode**.
 
 
-Let's look at how *J* changes as the conventions change:
+Let's look at how *J* changes across episodes as the human and robot adapt their conventions:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?\frac{dJ}{dt}=\frac{\partial&space;J}{\partial&space;\phi}\cdot\dot{\phi}&plus;\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\phi}" title="\frac{dJ}{dt}=\frac{\partial J}{\partial \phi}\cdot\dot{\phi}+\frac{\partial J}{\partial \psi}\cdot\dot{\phi}" />
 </p>
 
-Here the time derivatives *\dot{\phi}* and *\dot{psi}* capture how the human and robot **update** their convention between iterations. We **directly** control how the robot convention changes, while we --- at best --- **indirectly** control how the the human convention changes.
+Here the time derivatives *\dot{\phi}(t)* and *\dot{psi}(t)* capture how the human and robot **adapt** their convention between episodes. We **directly** control how the robot convention changes, while we --- at best --- **indirectly** control how the the human convention changes.
 
 ### Defining Convergence
 
-Convergence occurs when the cost does not change between iterations of the same task. More precisely, mutual adaptation has converged when *\dot{J} = 0*. Note that convergence is not the same as optimality --- i.e., we could converge to an inefficient pair of conventions.
+Convergence occurs when the cost *J* does not change between episodes of the same task. More precisely, mutual adaptation has converged when *\dot{J} = 0*. Note that convergence is not the same as optimality --- i.e., we could converge to an inefficient pair of conventions.
 
 ### Convergence Condition #1: Human Stops Adapting
 
@@ -108,7 +106,7 @@ Imagine that the human's rate of adaptation **decreases** over time, so that <im
 
 ### Convergence Condition #2: Robot with Human Awareness
 
-If the robot has an **accurate model** of how the human changes their convention over time, then the robot can compensate for the human's changes:
+If the robot has an **accurate model** of how the human changes their convention over time, then the robot can compensate for the human's changes within its own adaptation:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}-\Big(\frac{\partial&space;J}{\partial&space;\phi}\Big)^{&plus;}~\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}-\Big(\frac{\partial J}{\partial \phi}\Big)^{+}~\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
@@ -120,7 +118,7 @@ Consistent with the **human convention** we outlined above --- where the human's
 
 ### Fixed Human
 
-This human **never updates** their convention for a given task, regardless of how the robot changes its convention.
+This human **never updates** their convention for a given task, regardless of how the robot changes its convention. Put another way, *\dot{psi}(t) = 0*.
 
 ### Adaptive Human
 
@@ -235,7 +233,6 @@ Both our optimal and procedural humans were completely consistent, since they ha
 # To Write Up
 
  - Got closed form expression (kind of), not promising
- - Created 2-DoF environment with F and G
  - Tested with human that learns rotation with robot
  - Tested with human who works less as robot gets more accurate
  - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.
