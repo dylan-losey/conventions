@@ -40,28 +40,27 @@ class Params(object):
 
     def __init__(self):
 
-        mass = 0.5
+        mass = 0.2
         damper = 1.0
         timestep = 0.1
         n_steps = 21
         s_0 = [0.0, 0.0, 0.0, 0.0]
         g_0 = 0.0
         delta = 0.01
-        alpha = 0.001
-        offset = -0.0
+        offset = -1.0
 
         self.n_steps = n_steps
         self.timestep = timestep
         self.F_0 = np.array([[0,0,0,0],[0,0,0,0]])
         self.K_fixed = np.array([[1,0,0.1,0],[0,1,0,0.1]])
         self.s_0 = np.reshape(np.asarray(s_0), (4, 1))
+        self.g_0 = g_0
         self.G_0 = rotZ(g_0)
         self.A = np.array([[1,0,timestep,0],[0,1,0,timestep],[0,0,1-timestep*damper/mass,0],[0,0,0,1-timestep*damper/mass]])
         self.B = np.array([[0,0],[0,0],[timestep/mass,0],[0,timestep/mass]]) @ rotZ(offset)
         self.Q = np.array([[10,0,0,0],[0,10,0,0],[0,0,1,0],[0,0,0,1]])
         self.R = np.array([[1.0, 0],[0, 1.0]])
         self.delta = delta
-        self.alpha = alpha
 
 
 class Human(object):
@@ -71,7 +70,13 @@ class Human(object):
         self.Q = params.Q
         self.R = params.R
         self.K_fixed = params.K_fixed
+        self.g = None
+        self.mag = 1.0
         self.s_star = None
+
+    def convention(self, g, mag):
+        self.g = float(g)
+        self.mag = float(mag)
 
     def task(self, s_star):
     	self.s_star = np.reshape(np.asarray(s_star), (4, 1))
@@ -87,6 +92,15 @@ class Human(object):
 
     def control_fixed(self, s):
     	return self.K_fixed @ (self.s_star - s)
+
+    def control_adapt1(self, s):
+        return rotZ(self.g) @ self.K_fixed @ (self.s_star - s)
+
+    def control_adapt2(self, s):
+    	return self.mag * self.K_fixed @ (self.s_star - s)
+
+    def control_adapt3(self, s):
+        return self.mag * rotZ(self.g) @ self.K_fixed @ (self.s_star - s)
 
 
 class Robot(object):

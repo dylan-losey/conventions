@@ -4,6 +4,18 @@ from scipy import linalg as la
 import copy
 
 
+
+def grad_F(human, robot, control, F, delta):
+    F1p = F + np.array([[delta, 0]])
+    F1n = F - np.array([[delta, 0]])
+    F2p = F + np.array([[0, delta]])
+    F2n = F - np.array([[0, delta]])
+    J1p = query(human, robot, control, F1p)
+    J1n = query(human, robot, control, F1n)
+    J2p = query(human, robot, control, F2p)
+    J2n = query(human, robot, control, F2n)
+    return np.array([[J1p - J1n, J2p - J2n]]) * 0.5/delta
+
 def query(human, robot, control, F):
     robot.convention(F)
     human.convention(F)
@@ -15,7 +27,7 @@ class Params(object):
 
     def __init__(self):
 
-        mass = 1.0
+        mass = 0.2
         damper = 1.0
         timestep = 0.1
         n_steps = 21
@@ -49,6 +61,7 @@ class Human(object):
         self.K_pro = params.K_pro
         self.K_opt = self.dare()
         self.s_star = None
+        self.mag = 1.0
 
     def task(self, s_star):
     	self.s_star = np.reshape(np.asarray(s_star), (2, 1))
@@ -56,6 +69,9 @@ class Human(object):
     def convention(self, F):
     	self.Abar = self.A + self.B @ F
     	self.K_opt = self.dare()
+
+    def update(self, mag):
+        self.mag = float(mag)
 
     def cost(self, xi_s, xi_z):
     	effort, error = 0, 0
@@ -77,6 +93,9 @@ class Human(object):
 
     def control_opt(self, s):
     	return self.K_opt @ (self.s_star - s)
+
+    def control_react(self, s):
+    	return self.mag * self.K_opt @ (self.s_star - s)
 
 
 class Robot(object):
