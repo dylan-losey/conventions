@@ -162,11 +162,11 @@ Both our optimal and procedural humans were completely consistent, since they ha
 
 ## Re-defining Conventions
 
-Recall that the **robot's convention** is:
+Recall that the **robot convention** is:
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
 </p>
-Now we will introduce the **human's convention** as:
+Now we will introduce the **human convention** as:
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
 </p>
@@ -193,4 +193,7 @@ Convergence occurs when the cost does not change between iterations of the same 
 
 ### Convergence Condition #1: Human Stops Adapting
 
-Imagine that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then <img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}" /> assures convergence.
+Imagine that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then we assure convergence over time with the standard choice of:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}" />
+ </p>
