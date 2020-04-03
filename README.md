@@ -193,7 +193,14 @@ Convergence occurs when the cost does not change between iterations of the same 
 
 ### Convergence Condition #1: Human Stops Adapting
 
-Imagine that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then we assure convergence over time with the standard choice of:
+Imagine that the human's rate of adaptation **decreases** over time, so that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then we can assure convergence with the standard choice of:
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}" />
+ </p>
+
+### Convergence Condition #2: Robot with Human Awareness
+
+If the robot has an **accurate model** of how the human changes their convention over time, then the robot can compensate for the human's changes:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}-\Big(\frac{\partial&space;J}{\partial&space;\phi}\Big)^{&plus;}~\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}-\Big(\frac{\partial J}{\partial \phi}\Big)^{+}~\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
  </p>
