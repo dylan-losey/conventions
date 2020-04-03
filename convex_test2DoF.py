@@ -1,4 +1,4 @@
-from environment2DoF import Params, Human, Robot
+from environment2DoF import Params, Human, Robot, query, grad_F, grad_g
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -38,3 +38,20 @@ for idx in range(len(g)):
 plt.plot(g, Z)
 plt.plot(xs, zs, 'ko-')
 plt.show()
+
+
+# # sanity check on the gradient procedure
+# g = 0.5
+# F = np.random.random((2,4)) * -0.5
+# J = query(human, robot, control, F, g)
+# print(J, g, F)
+# while True:
+#     dJdg = grad_g(human, robot, control, F, g, params.delta)
+#     dJdF = grad_F(human, robot, control, F, g, params.delta)
+#     g_next = g - params.alpha * dJdg
+#     F_next = F - params.alpha * dJdF
+#     J_next = query(human, robot, control, F_next, g_next)
+#     print(J_next, g_next, F_next)
+#     if abs(J_next - J) < 0.01:
+#         break
+#     g, F, J = g_next, F_next, J_next

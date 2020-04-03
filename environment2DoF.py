@@ -6,6 +6,26 @@ import math
 
 
 
+def grad_F(human, robot, control, F, g, delta):
+    dJdF = np.zeros((2,4))
+    for idx in range(2):
+        for jdx in range(4):
+            DELTA = np.zeros((2,4))
+            DELTA[idx, jdx] = delta
+            F1p = F + DELTA
+            F1n = F - DELTA
+            Jp = query(human, robot, control, F1p, g)
+            Jn = query(human, robot, control, F1n, g)
+            dJdF[idx,jdx] = (Jp - Jn) * 0.5/delta
+    return dJdF
+
+def grad_g(human, robot, control, F, g, delta):
+    g1p = g + delta
+    g1n = g - delta
+    Jp = query(human, robot, control, F, g1p)
+    Jn = query(human, robot, control, F, g1n)
+    return (Jp - Jn) * 0.5/delta
+
 def query(human, robot, control, F, g):
     robot.convention(F, g)
     xi_s, xi_z = robot.rollout(control)
@@ -27,8 +47,8 @@ class Params(object):
         s_0 = [0.0, 0.0, 0.0, 0.0]
         g_0 = 0.0
         delta = 0.01
-        alpha = 0.1
-        offset = -0.5
+        alpha = 0.001
+        offset = -0.0
 
         self.n_steps = n_steps
         self.timestep = timestep
