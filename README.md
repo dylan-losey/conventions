@@ -151,14 +151,18 @@ Let's define consistency. <i>Given a fixed convention F and task s*, the human r
 The smaller sigma is, the more consistent the human is.</i>
 Both our optimal and procedural humans were completely consistent, since they had a one-to-one mapping from F and s* to J.
 
-# Next Steps
+## Next Steps (March 31st)
 
- - Insight: conventions define the relationship between human inputs and robot outputs
- - Look at a very different environment, such as correctly identifying a photo from its description
- - Conventions that evolve in scale, such as pressing up indicating open the door
+ - Insight: conventions define the dynamic relationship between inputs and outputs
+ - Try to find a closed form expression relating the convention to cost
+ - Create a similar (but different) environment to further explore conventions
+ - Explore mutual adaptation where both H and R change conventions
 
-## Human with Latent State
+# Mutual Adaptation
 
-We started looking at a human whose behavior is directly influenced by the robot.
-Previously, we had the optimal human.
-We found that this new human can cause the robot's learning to become unstable. 
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
+</p>
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
+</p>
