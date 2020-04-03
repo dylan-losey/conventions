@@ -122,7 +122,7 @@ This human **never updates** their convention for a given task, regardless of ho
 
 ### Adaptive Human
 
-This human **updates** their convention between trials of a given task. Some instances of adaptive humans (that we have tested) are:
+This human **updates** their convention between trials of a given task. Some instances of adaptive humans include:
 
  - **Random Human**: this user randomly changes their convention between trials
  - **LQR Human**: this user observes the current robot convention, and solves the LQR problem to select their corresponding convention
