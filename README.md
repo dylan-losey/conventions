@@ -134,14 +134,14 @@ This human **updates** their convention between trials of a given task. Some ins
 
 The robot is a 1-DoF mass-damper (e.g., pushing a block left and right).
 The robot convention boils down to choosing *F = [f<sub>1</sub>, f<sub>2</sub>]*.
-The human convention is determined by *eta* and *K = [k<sub>1</sub>, k<sub>2</sub>]*.
+The human convention is determined by *K = [k<sub>1</sub>, k<sub>2</sub>]*.
 
 ### 2-DoF Robot
 
 The robot is a mass-damper moving in a 2-DoF plane (e.g., moving a table around a room).
-We introduced a rotational offset between the human's inputs and the robot's actions.
+We have also introduced a rotational offset between the human's inputs and the robot's actions.
 The robot convention involves choosing *F* --- a 2 x 4 matrix that changes the robot's dynamics --- and *G* --- a 2 x 2 matrix that alters the rotational offset.
-The human convention is determined by *eta*, *theta*, and *K*.
+The human convention is determined by *K*, a 2 x 4 matrix.
 
 # Results (April 7th Meeting)
 
