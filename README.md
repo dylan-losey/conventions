@@ -43,7 +43,7 @@ where *F* and *G* are constant matrices that capture the convention.
 Drawing from LQR theory, we define the **human convention** as a feedback controller:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?z=\eta&space;R(\theta)K(s^*-s)" title="z=\eta R(\theta)K(s^*-s)" />
+<img src="https://latex.codecogs.com/svg.latex?z=\psi(s^*,s)=\eta&space;R(\theta)K(s^*-s)" title="z=\psi(s^*,s)=\eta R(\theta)K(s^*-s)" />
 </p>
 
 We let *eta* be a scalar that affects magnitude, *R(theta)* is a rotation matrix, and *K* is the feedback gain.
