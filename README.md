@@ -33,7 +33,7 @@ where A and B are constant matrices that capture the physical properties of the 
 Here we will define the **robot convention** as a linear funtion of the state and input:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?a&space;=&space;\phi(s,&space;a)&space;=&space;Fs&space;&plus;&space;Gz" title="a = \phi(s, a) = Fs + Gz" />
+<img src="https://latex.codecogs.com/svg.latex?a=\phi(s,z)=Fs&plus;Gz" title="a=\phi(s,z)=Fs+Gz" />
 </p>
 
 where *F* and *G* are constant matrices that capture the convention.
