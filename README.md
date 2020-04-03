@@ -4,7 +4,7 @@ Inspired by our recent work on assistive robots, we want to better understand an
 
 ## What Are Conventions?
 
-Let s be the robot state and let a be the robot action. The human provides input z, and the **robot convention** is:
+Let *s* be the robot state and let *a* be the robot action. The human provides input *z*, and the **robot convention** is:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
@@ -28,7 +28,7 @@ Let's focus on robots with dynamics:
 <img src="https://latex.codecogs.com/svg.latex?\dot{s}&space;=&space;As&space;&plus;&space;Ba" title="\dot{s} = As + Ba" />
 </p>
 
-where A and B are constant matrices that capture the physical properties of the system. The robot takes action a and observes state s.
+where *A* and *B* are constant matrices that capture the physical properties of the system. The robot takes action *a* and observes state *s*.
 
 ### Robot Convention
 
@@ -45,10 +45,10 @@ where *F* and *G* are constant matrices that capture the convention.
 Drawing from LQR theory, we define the **human convention** as a feedback controller:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?z=\psi(s^*,s)=\eta&space;R(\theta)K(s^*-s)" title="z=\psi(s^*,s)=\eta R(\theta)K(s^*-s)" />
+<img src="https://latex.codecogs.com/svg.latex?z=\psi(s^*,s)=K(s^*-s)" title="z=\psi(s^*,s)=K(s^*-s)" />
 </p>
 
-We let *eta* be a scalar that affects magnitude, *R(theta)* is a rotation matrix, and *K* is the feedback gain.
+We let *K* be the feedback gain. In practice, this matrix can also capture input magnitude and rotational alignment.
 
 ### Closed-Loop Dynamics
 
@@ -58,7 +58,7 @@ Putting together all of the equations we outlined above, we find the following c
 <img src="https://latex.codecogs.com/svg.latex?\dot{s}=\mathbb{A}s&plus;\mathbb{B}(s^*-s)" title="\dot{s}=\mathbb{A}s+\mathbb{B}(s^*-s)" />
 </p>
 
-where big *A* and *B* are linear matrices formed from the human and robot conventions.
+where *\mathbb{A}* and *\mathbb{B}* are linear matrices formed from the human and robot conventions. This suggests our first insight: *conventions define the dynamics between inputs and outputs*.
 
 ### Quadratic Cost Function
 
@@ -68,12 +68,12 @@ The human has in mind a cost function they want the robot to minimize. Let's ass
 <img src="https://latex.codecogs.com/svg.latex?J=\int{\|s^*-s(t)\|^2_Q&plus;\|z(t)\|^2_R~dt}" title="J=\int{\|s^*-s(t)\|^2_Q+\|z(t)\|^2_R~dt}" />
 </p>
 
-The human knows the right task s* and the correct weights Q and R.
+The human knows the right task s* and the correct weights *Q* and *R*.
 
 ### Feedback
 
-At the end of each task, we assume that the human reports their total cost J to the robot.
-We also assume that neither the human nor robot change their convention **within** a task (i.e., during an episode).
+At the end of each task, we assume that the human reports their total cost *J* to the robot.
+We also assume that neither the human nor robot change their convention **during** a task (i.e., within an episode).
 
 ## Mutual Adaptation
 
@@ -81,7 +81,7 @@ Mutual adaptation here refers to cases where the human robot conventions **evolv
 
 ### Changing Conventions
 
-Both the human and robot conventions affect the overall task performance: <img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" /> where *t* is the current **episode**.
+Both the human and robot conventions affect the overall task performance: we can write <img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" /> where *t* is the current **episode**.
 
 
 Let's look at how *J* changes across episodes as the human and robot adapt their conventions:
