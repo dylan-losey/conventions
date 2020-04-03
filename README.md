@@ -160,9 +160,37 @@ Both our optimal and procedural humans were completely consistent, since they ha
 
 # Mutual Adaptation
 
+## Re-defining Conventions
+
+Recall that the **robot's convention** is:
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
 </p>
+Now we will introduce the **human's convention** as:
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
 </p>
+We **directly** control the robot's convention, while we --- at best --- **indirectly** control the human's convention.
+
+## Relating Conventions to Cost
+
+Recall that *J* is the overall cost incurred by the human during a task. Both the human and robot conventions affect the overall task performance:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" />
+</p>
+where *t* is the current **iteration**.
+
+
+Let's look at how *J* changes as the conventions change:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\frac{dJ}{dt}=\frac{\partial&space;J}{\partial&space;\phi}\cdot\dot{\phi}&plus;\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\phi}" title="\frac{dJ}{dt}=\frac{\partial J}{\partial \phi}\cdot\dot{\phi}+\frac{\partial J}{\partial \psi}\cdot\dot{\phi}" />
+</p>
+Here the time derivatives *\dot{\phi}* and *\dot{psi}* capture how the human and robot **update** their convention between trials.
+
+## Convergence
+
+Convergence occurs when the cost does not change between iterations of the same task. More precisely, mutual adaptation has converged when *\dot{J} = 0*. Note that convergence is not the same as optimality --- i.e., we could converge to an inefficient pair of conventions.
+
+### Convergence Condition #1: Human Stops Adapting
+
+Imagine that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then <img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}" /> assures convergence.
