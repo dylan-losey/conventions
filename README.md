@@ -151,14 +151,68 @@ Let's define consistency. <i>Given a fixed convention F and task s*, the human r
 The smaller sigma is, the more consistent the human is.</i>
 Both our optimal and procedural humans were completely consistent, since they had a one-to-one mapping from F and s* to J.
 
-# Next Steps
+## Next Steps (March 31st)
 
- - Insight: conventions define the relationship between human inputs and robot outputs
- - Look at a very different environment, such as correctly identifying a photo from its description
- - Conventions that evolve in scale, such as pressing up indicating open the door
+ - Insight: conventions define the dynamic relationship between inputs and outputs
+ - Try to find a closed form expression relating the convention to cost
+ - Create a similar (but different) environment to further explore conventions
+ - Explore mutual adaptation where both H and R change conventions
 
-## Human with Latent State
+# Mutual Adaptation
 
-We started looking at a human whose behavior is directly influenced by the robot.
-Previously, we had the optimal human.
-We found that this new human can cause the robot's learning to become unstable. 
+## Re-defining Conventions
+
+Recall that the **robot convention** is:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
+</p>
+Now we will introduce the **human convention** as:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
+</p>
+We **directly** control the robot's convention, while we --- at best --- **indirectly** control the human's convention.
+
+## Relating Conventions to Cost
+
+Recall that *J* is the overall cost incurred by the human during a task. Both the human and robot conventions affect the overall task performance:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" />
+</p>
+where *t* is the current **iteration**.
+
+
+Let's look at how *J* changes as the conventions change:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\frac{dJ}{dt}=\frac{\partial&space;J}{\partial&space;\phi}\cdot\dot{\phi}&plus;\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\phi}" title="\frac{dJ}{dt}=\frac{\partial J}{\partial \phi}\cdot\dot{\phi}+\frac{\partial J}{\partial \psi}\cdot\dot{\phi}" />
+</p>
+Here the time derivatives *\dot{\phi}* and *\dot{psi}* capture how the human and robot **update** their convention between trials.
+
+## Convergence
+
+Convergence occurs when the cost does not change between iterations of the same task. More precisely, mutual adaptation has converged when *\dot{J} = 0*. Note that convergence is not the same as optimality --- i.e., we could converge to an inefficient pair of conventions.
+
+### Convergence Condition #1: Human Stops Adapting
+
+Imagine that the human's rate of adaptation **decreases** over time, so that <img src="https://latex.codecogs.com/gif.latex?\dot{\psi}(t)\rightarrow0\text{&space;as&space;}t\rightarrow\infty" title="\dot{\psi}(t)\rightarrow0\text{ as }t\rightarrow\infty" />. Then we can assure convergence with the standard choice of:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}" />
+ </p>
+
+### Convergence Condition #2: Robot with Human Awareness
+
+If the robot has an **accurate model** of how the human changes their convention over time, then the robot can compensate for the human's changes:
+<p align="center">
+<img src="https://latex.codecogs.com/gif.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}-\Big(\frac{\partial&space;J}{\partial&space;\phi}\Big)^{&plus;}~\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}-\Big(\frac{\partial J}{\partial \phi}\Big)^{+}~\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
+ </p>
+
+# To Write Up
+
+ - Got closed form expression (kind of), not promising
+ - Created 2-DoF environment with F and G
+ - Tested with human that learns rotation with robot
+ - Tested with human who works less as robot gets more accurate
+ - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.
+ - Went back to first environment and see mutual adaptation instability
+ - became unstable for lower masses, where change in human force had big impact
+ - what types of human models/learning cause this instability?
+ - need to more clearly formulate this problem
