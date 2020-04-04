@@ -16,7 +16,7 @@ The human has in mind a task s* (e.g., a goal state), which they think about whe
 <img src="https://latex.codecogs.com/svg.latex?z=\psi(s^*,s)" title="z=\psi(s^*,s)" />
 </p>
 
-Together the human and robot conventions define the overall process from *(task, observation)* to action.
+Together, the human and robot conventions define the overall mapping from *(task, observation)* to action.
 
 ## Environment
 
@@ -32,13 +32,13 @@ where *A* and *B* are constant matrices that capture the physical properties of 
 
 ### Robot Convention
 
-Here we will define the **robot convention** as a linear funtion of the state and input:
+Here we will define the **robot convention** as a linear function of the state and input:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?a=\phi(s,z)=Fs&plus;Gz" title="a=\phi(s,z)=Fs+Gz" />
 </p>
 
-where *F* and *G* are constant matrices that capture the convention.
+Here *F* and *G* are constant matrices that capture the convention.
 
 ### Human Convention
 
@@ -77,11 +77,11 @@ We also assume that neither the human nor robot change their convention **during
 
 ## Mutual Adaptation
 
-Mutual adaptation here refers to cases where the human robot conventions **evolve** over repeated interactions.
+Mutual adaptation here refers to cases where the human and robot conventions **evolve** over repeated interactions.
 
 ### Changing Conventions
 
-Both the human and robot conventions affect the overall task performance: we can write <img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" /> where *t* is the current **episode**.
+Both the human and robot conventions affect the overall task performance: we can write <img src="https://latex.codecogs.com/svg.latex?J(\phi(t),\psi(t))" title="J(\phi(t),\psi(t))" />, where *t* is the current **episode**.
 
 
 Let's look at how *J* changes across episodes as the human and robot adapt their conventions:
@@ -139,7 +139,7 @@ The human convention is determined by *K = [k<sub>1</sub>, k<sub>2</sub>]*.
 ### 2-DoF Robot
 
 The robot is a mass-damper moving in a 2-DoF plane (e.g., moving a table around a room).
-We have also introduced a rotational offset between the human's inputs and the robot's actions.
+We have also introduced a **rotational offset** between the human's inputs and the robot's actions.
 The robot convention involves choosing *F* --- a 2 x 4 matrix that changes the robot's dynamics --- and *G* --- a 2 x 2 matrix that alters the rotational offset.
 The human convention is determined by *K*, a 2 x 4 matrix.
 
@@ -233,10 +233,7 @@ Both our optimal and procedural humans were completely consistent, since they ha
 # To Write Up
 
  - Got closed form expression (kind of), not promising
- - Tested with human that learns rotation with robot
- - Tested with human who works less as robot gets more accurate
+ - show mutual adaptation failure (2DoF, full adaptation, reactive human)
+ - show condition 1 (with random human)
+ - show condition 2 (with reactive human) - TO DO
  - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.
- - Went back to first environment and see mutual adaptation instability
- - became unstable for lower masses, where change in human force had big impact
- - what types of human models/learning cause this instability?
- - need to more clearly formulate this problem

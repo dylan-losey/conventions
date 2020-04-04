@@ -5,6 +5,16 @@ import copy
 import math
 
 
+def grad_H(human, robot, control, F, g, magh, gh, delta):
+    human.convention(gh, magh + delta)
+    Jmag_p = query(human, robot, control, F, g)
+    human.convention(gh, magh - delta)
+    Jmag_n = query(human, robot, control, F, g)
+    human.convention(gh + delta, magh)
+    Jgh_p = query(human, robot, control, F, g)
+    human.convention(gh - delta, magh)
+    Jgh_n = query(human, robot, control, F, g)
+    return (Jmag_p - Jmag_n) * 0.5/delta, (Jgh_p - Jgh_n) * 0.5/delta
 
 def grad_F(human, robot, control, F, g, delta):
     dJdF = np.zeros((2,4))
@@ -40,7 +50,7 @@ class Params(object):
 
     def __init__(self):
 
-        mass = 0.2
+        mass = 0.25
         damper = 1.0
         timestep = 0.1
         n_steps = 21
