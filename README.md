@@ -112,6 +112,8 @@ If the robot has an **accurate model** of how the human changes their convention
 <img src="https://latex.codecogs.com/svg.latex?\dot{\phi}=-\alpha\cdot\frac{\partial&space;J}{\partial&space;\phi}-\Big(\frac{\partial&space;J}{\partial&space;\phi}\Big)^{&plus;}~\frac{\partial&space;J}{\partial&space;\psi}\cdot\dot{\psi}" title="\dot{\phi}=-\alpha\cdot\frac{\partial J}{\partial \phi}-\Big(\frac{\partial J}{\partial \phi}\Big)^{+}~\frac{\partial J}{\partial \psi}\cdot\dot{\psi}" />
  </p>
 
+ This relies on having no non-zero entries in *dJdphi*, otherwise there is a null space.
+
 ## Human Models
 
 Consistent with the **human convention** we outlined above --- where the human's policy is a linear function of the current state error --- we simulate two broad types of humans.
@@ -182,6 +184,22 @@ the **optimal response** to the human's final convention.
 
 ### Convergence Condition #2: Robot with Human Awareness
 
+Alternatively, if we have a perfect human model, we can try to compensate for the changes in human convention.
+Here we again pair a **reactive human** with the 2-DoF robot.
+This robot has a model of how the human adapts, and updates its own convention
+with this prediction in mind.
+Our simulations were performed on the low-mass robot, where we previously saw that the
+reactive human can cause instability.
+
+<img src=results/convergence_condition2_basic.png width="49%"/> <img src=results/convergence_condition2_comp.png width="49%"/>
+
+On the left we focus on the first 50 episodes **without any compensation**. As you can see,
+the human convention changes significantly between trials, and the cost fluctuates.
+On the right we show the same 50 episodes **with compensation**.
+The robot knows how the human will update their convention, and it changes
+its own convention in order to consistently reduce the overall cost.
+We point out that this result is very *brittle*: we often reach singularities (in the gradient space)
+that cause spikes in the human convention and robot cost.
 
 # Results (March 31st Meeting)
 
