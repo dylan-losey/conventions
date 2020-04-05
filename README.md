@@ -285,9 +285,3 @@ Both our optimal and procedural humans were completely consistent, since they ha
  - Try to find a closed form expression relating the convention to cost
  - Create a similar (but different) environment to further explore conventions
  - Explore mutual adaptation where both H and R change conventions
-
-# To Write Up
-
- - Got closed form expression (kind of), not promising
- - show condition 2 (with reactive human) - TO DO
- - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.
