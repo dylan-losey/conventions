@@ -145,6 +145,44 @@ The human convention is determined by *K*, a 2 x 4 matrix.
 
 # Results (April 7th Meeting)
 
+## Unstable Mutual Adaptation
+
+Let's see how the human and robot conventions evolve over time.
+Here the human and robot are performing a single task s* across multiple episodes.
+We paired a **reactive human** with the 2-DoF Robot.
+The robot updates its convention between episodes to minimize cost:
+*\dot{\phi}(t) = -dF/d\phi*.
+
+<img src=results/convergence_unstable.png width="49%"/> <img src=results/convergence_stable.png width="49%"/>
+
+Above we plot both the **normalized cost** and the magnitude of the **human's convention**.
+On the left we consider a robot with a low mass. As you can see, mutual adaptation here is **unstable**:
+this occurs because small changes in the human's convention cause large changes in the robot's behavior.
+On the right we use the exact same human, but increase the robot's mass. This is an example of **convergence**:
+the human and robot eventually reach a consistent set of conventions for performing this task.
+
+## Convergence Condition #1: Human Stops Adapting
+
+The previous example demonstrated that some pairings of human and robot lead to unstable mutual adaptation.
+Let's see if we can ensure this convergence.
+We pick an adversarial human --- i.e., a **random human**, who changes their convention between trials.
+However, we add the additional assumption that this human's changes decrease over time,
+and eventually *\dot{\psi}(t) = 0*.
+We pair this human with the same low-mass robot leveraged in the previous example.
+
+<p align="center">
+<img src=results/convergence_condition1.png>
+</p>
+
+Above we plot both the **normalized cost** and the magnitude of the **human's convention**.
+We find that --- as theorized above --- the human and robot **converge** when the human
+eventually stops adapting.
+Considering our previous convexity results, we suggest that the robot converges to
+the **optimal response** to the human's final convention.
+
+### Convergence Condition #2: Robot with Human Awareness
+
+
 # Results (March 31st Meeting)
 
 ## Convexity
@@ -233,7 +271,5 @@ Both our optimal and procedural humans were completely consistent, since they ha
 # To Write Up
 
  - Got closed form expression (kind of), not promising
- - show mutual adaptation failure (2DoF, full adaptation, reactive human)
- - show condition 1 (with random human)
  - show condition 2 (with reactive human) - TO DO
  - Note: this is not learning with opponent awareness. Robot does not know anything about how human adapts.

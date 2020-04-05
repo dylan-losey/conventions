@@ -42,8 +42,8 @@ for count in range(1000):
 
     # human updates convention
     gh_next = gh * 0.9 + 0.5 * (1.0 - g - gh)
-    # magh_next = np.linalg.norm(human.s_star - xi_s[params.n_steps - 1])
-    magh_next = 0.5 + (np.random.random() - 0.5) * 0.99**count
+    magh_next = np.linalg.norm(human.s_star - xi_s[params.n_steps - 1])
+    # magh_next = 0.5 + (np.random.random() - 0.5) * 0.99**count
     # magh_next = magh
 
     # record and update both human and robot

@@ -50,7 +50,7 @@ class Params(object):
 
     def __init__(self):
 
-        mass = 0.25
+        mass = 0.5
         damper = 1.0
         timestep = 0.1
         n_steps = 21
