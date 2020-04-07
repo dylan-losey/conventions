@@ -7,7 +7,7 @@ Inspired by our recent work on assistive robots, we want to better understand an
 Let *s* be the robot state and let *a* be the robot action. The human provides input *z*, and the **robot convention** is:
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?a=\phi(s,z)" title="a=\phi(s,z)" />
+<img src="https://latex.codecogs.com/svg.latex?a=\mathcal{R}(s,z)" title="a=\mathcal{R}(s,z)" />
 </p>
 
 The human has in mind a task s* (e.g., a goal state), which they think about when providing inputs. Let the **human convention** be:
