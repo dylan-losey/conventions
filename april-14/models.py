@@ -50,25 +50,25 @@ class Convention(nn.Module):
         self.signal = 0.0
         return s_next, z
 
-    def human(self, s_star, s):
-        e = torch.tensor([[s_star[0]-s[0]],[s_star[1]-s[1]]])
-        z = torch.tensor([[1.0, 0.1]]) @ e
-        return z[0]
-
     # def human(self, s_star, s):
-    #     x = torch.FloatTensor(s_star + s)
-    #     h1 = torch.tanh(self.fch1(x))
-    #     return self.fch2(h1)
+    #     e = torch.tensor([[s_star[0]-s[0]],[s_star[1]-s[1]]])
+    #     z = torch.tensor([[1.0, 0.1]]) @ e
+    #     return z[0]
 
-    def robot(self, s, z):
-        x = torch.cat((torch.FloatTensor(s), z), dim=0)
-        h1 = torch.tanh(self.fcr1(x))
-        return self.fcr2(h1)
+    def human(self, s_star, s):
+        x = torch.FloatTensor(s_star + s)
+        h1 = torch.tanh(self.fch1(x))
+        return self.fch2(h1)
 
     # def robot(self, s, z):
     #     x = torch.cat((torch.FloatTensor(s), z), dim=0)
-    #     out, self.hidden = self.lstm(x.view(1, 1, -1), self.hidden)
-    #     return self.fcr3(out[0,0,:])
+    #     h1 = torch.tanh(self.fcr1(x))
+    #     return self.fcr2(h1)
+
+    def robot(self, s, z):
+        x = torch.cat((torch.FloatTensor(s), z), dim=0)
+        out, self.hidden = self.lstm(x.view(1, 1, -1), self.hidden)
+        return self.fcr3(out[0,0,:])
 
     def cost_J(self, s_star, s_0):
         s = copy.deepcopy(s_0)
