@@ -1,4 +1,4 @@
-from environment import *
+from environment import Simple
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -13,10 +13,12 @@ H = np.linspace(0.5, 2.0, 21)
 X, Y = np.meshgrid(R, H)
 Z = np.zeros(np.shape(X))
 
+robot = Simple()
+
 xs, ys, zs = None, None, np.Inf
 for idx in range(len(R)):
     for jdx in range(len(H)):
-        Q = cost_Q(s_0, R[idx], H[jdx])
+        Q = robot.cost_Q(s_0, R[idx], H[jdx])
         if Q < zs:
             xs, ys, zs = R[idx], H[jdx], Q
         Z[jdx, idx] = Q
