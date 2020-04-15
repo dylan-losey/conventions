@@ -123,16 +123,17 @@ def main():
 
     while True:
 
-        # human
+        s_star = [0.8, 0.0]
+        s = [player.x, player.xdot]
+        print(s)
+
+        # real human
         z, e_stop = joystick.input()
         z = torch.FloatTensor([z])
         if e_stop:
           pygame.quit(); sys.exit()
 
-        s_star = [0.8, 0.0]
-        s = [player.x, player.xdot]
-        print(s)
-
+        # model human
         z = model.human(s_star, s)
 
         # robot
