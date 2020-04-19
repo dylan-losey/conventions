@@ -8,7 +8,7 @@ import random
 import pickle
 import copy
 import torch
-from models import Convention
+from rnn_models import RNNAE
 
 
 class Joystick(object):
@@ -23,7 +23,7 @@ class Joystick(object):
         z = self.gamepad.get_axis(0)
         if abs(z) < self.DEADBAND:
             z = 0.0
-        e_stop = self.gamepad.get_button(0)
+        e_stop = self.gamepad.get_button(7)
         return z, e_stop
 
 
@@ -54,24 +54,17 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # initial conditions
-        self.x = 0
-        self.xdot = 0.0
+        self.x = 0.0
         self.rect.x = (self.x * 1000) + 200 - self.rect.size[0] / 2
         self.rect.y = 100 - self.rect.size[1] / 2
 
-        # current inputs
-        self.a = 0.0
-        self.z = 0.0
-        self.timestep = 0.05
-
-    def update(self, a):
+    def update(self, s):
 
         # get the table
         self.rect = self.image.get_rect(center=self.rect.center)
 
         # integrate to get new state
-        self.x = self.x + self.xdot * self.timestep
-        self.xdot = self.xdot + float(a) * self.timestep
+        self.x = s.item()
 
         # update the table position
         self.rect.x = (self.x * 1000) + 200 - self.rect.size[0] / 2
@@ -79,33 +72,29 @@ class Player(pygame.sprite.Sprite):
 
 class Model(object):
 
-    def __init__(self):
-        self.model = Convention()
-        model_dict = torch.load('models/influence_a1.pt', map_location='cpu')
+    def __init__(self, modelname):
+        self.model = RNNAE()
+        model_dict = torch.load(modelname, map_location='cpu')
         self.model.load_state_dict(model_dict)
         self.model.eval
 
-    def human_initial(self, s_star, s):
-        return self.model.human_initial(s_star, s)
-
-    def human(self, s_star, s):
-        return self.model.human(s_star, s)
-
-    def robot(self, s, z):
-        return self.model.robot(s, z)
+    def robot(self, input, hidden):
+        output, hidden = self.model.robot(input, hidden)
+        return output, hidden
 
 
 def main():
 
     clock = pygame.time.Clock()
     pygame.init()
-    fps = 20
+    fps = 4
 
     world = pygame.display.set_mode([1400,200])
+    modelname = 'models/test-rnn.pt'
 
     player = Player()
     joystick = Joystick()
-    model = Model()
+    model = Model(modelname)
 
     g1 = Goal(0.2)
     g2 = Goal(0.4)
@@ -121,32 +110,36 @@ def main():
     sprite_list.add(g4)
     sprite_list.add(g5)
 
-    while True:
+    count = 0
+    hidden = model.model.init_hidden()
 
-        s_star = [0.8, 0.0]
-        s = [player.x, player.xdot]
-        print(s)
+    while count < 10:
+
+        s = torch.tensor(player.x)
+        s = s.view(1)
 
         # real human
-        z, e_stop = joystick.input()
-        z = torch.FloatTensor([z])
+        ah, e_stop = joystick.input()
+        ah = torch.tensor(ah)
         if e_stop:
-          pygame.quit(); sys.exit()
+            pygame.quit(); sys.exit()
 
-        # model human
-        z = model.human(s_star, s)
+        context = torch.cat((s, ah.view(1)), 0)
 
         # robot
-        a = model.robot(s, z)
+        ar, hidden = model.robot(context, hidden)
+        s = s + ar
 
         # dynamics
-        player.update(a)
+        player.update(s)
 
         # animate
         world.fill((0,0,0))
         sprite_list.draw(world)
         pygame.display.flip()
         clock.tick(fps)
+        count += 1
+        print(count, ah)
 
 
 if __name__ == "__main__":
