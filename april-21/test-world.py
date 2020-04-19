@@ -50,7 +50,7 @@ class Player(pygame.sprite.Sprite):
         # create sprite
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((50,50))
-        self.image.fill((255, 255, 255))
+        self.image.fill((255, 128, 0))
         self.rect = self.image.get_rect()
 
         # initial conditions
@@ -87,10 +87,10 @@ def main():
 
     clock = pygame.time.Clock()
     pygame.init()
-    fps = 4
+    fps = 2
 
     world = pygame.display.set_mode([1400,200])
-    modelname = 'models/test-rnn.pt'
+    modelname = 'models/test-rnn-2.pt'
 
     player = Player()
     joystick = Joystick()
@@ -112,6 +112,11 @@ def main():
 
     count = 0
     hidden = model.model.init_hidden()
+
+    world.fill((0,0,0))
+    sprite_list.draw(world)
+    pygame.display.flip()
+    clock.tick(fps)
 
     while count < 10:
 

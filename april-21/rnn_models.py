@@ -22,6 +22,8 @@ class RNNAE(nn.Module):
 
         self.h_start = None
         self.h_length = None
+        self.h_go1 = None
+        self.h_go2 = None
 
         self.hidden_size = 10
         self.input_size = 2
@@ -39,13 +41,25 @@ class RNNAE(nn.Module):
         return (torch.zeros(1, 1, self.hidden_size), torch.zeros(1, 1, self.hidden_size))
 
 
+    # def human(self, s_star, t):
+    #     noise = torch.randn(1) * 0.0
+    #     ah = torch.tensor(0.0)
+    #     if t >= self.h_start and t < (self.h_start + self.h_length):
+    #         ah = (s_star - 0.6) / 0.4
+    #         if s_star == 0.4 or s_star == 0.8:
+    #             noise = torch.randn(1) * 0.1
+    #     return ah.view(1) + noise
+
+
     def human(self, s_star, t):
-        noise = torch.randn(1) * 0.0
+        noise = torch.randn(1) * 0.05
         ah = torch.tensor(0.0)
-        if t >= self.h_start and t < (self.h_start + self.h_length):
-            ah = (s_star - 0.6) / 0.4
-            if s_star == 0.4 or s_star == 0.8:
-                noise = torch.randn(1) * 0.1
+        if s_star == 0.4 or s_star == 0.8:
+            if t in self.h_go1:
+                ah = (s_star - 0.6) / 0.2
+        else:
+            if t in self.h_go2:
+                ah = (s_star - 0.6) / 0.4
         return ah.view(1) + noise
 
 
@@ -84,6 +98,8 @@ class RNNAE(nn.Module):
         Q = 0.0
         self.h_start = np.random.randint(0, self.n_steps)
         self.h_length = 1 + np.random.randint(0, 5)
+        self.h_go1 = np.random.randint(0, 4, 4)
+        self.h_go2 = np.random.randint(4, 8, 4)
         for s_star in self.omega:
             error, _, _, _ = self.rollout(s_star)
             Q += error
@@ -94,7 +110,7 @@ EPOCH = 10000
 LR = 0.01
 LR_STEP_SIZE = 2000
 LR_GAMMA = 0.1
-SAVENAME = "models/test-rnn.pt"
+SAVENAME = "models/test-rnn-2.pt"
 
 
 def main():
