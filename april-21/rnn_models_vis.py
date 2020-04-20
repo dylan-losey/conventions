@@ -48,16 +48,16 @@ def plot_ar(model):
 
 def main():
 
-    modelname = 'models/test-rnn-1.pt'
-    model = Model(modelname)
-    model.model.h_start = np.random.randint(0, model.model.n_steps)
-    model.model.h_length = np.random.randint(1, model.model.n_steps)
-    model.model.h_go1 = np.random.randint(0, 4, 4)
-    model.model.h_go2 = np.random.randint(4, 8, 4)
+    number = sys.argv[1]
 
+    modelname = "models/robot-" + number + ".pt"
+    model = Model(modelname)
+    len = np.random.randint(1, 8)
+    model.model.h_go = np.random.randint(0, 8, len)
+    
     plot_states(model)
     plot_ah(model)
-    # plot_ar(model)
+    plot_ar(model)
 
 
 if __name__ == "__main__":
