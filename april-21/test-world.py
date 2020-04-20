@@ -9,6 +9,7 @@ import pickle
 import copy
 import torch
 from rnn_models import RNNAE
+from inter_models import TEAM
 
 
 class Joystick(object):
@@ -70,16 +71,29 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = (self.x * 1000) + 200 - self.rect.size[0] / 2
 
 
+# class Model(object):
+#
+#     def __init__(self, modelname):
+#         self.model = RNNAE()
+#         model_dict = torch.load(modelname, map_location='cpu')
+#         self.model.load_state_dict(model_dict)
+#         self.model.eval
+#
+#     def robot(self, input, hidden):
+#         output, hidden = self.model.robot(input, hidden)
+#         return output, hidden
+
+
 class Model(object):
 
     def __init__(self, modelname):
-        self.model = RNNAE()
+        self.model = TEAM()
         model_dict = torch.load(modelname, map_location='cpu')
         self.model.load_state_dict(model_dict)
         self.model.eval
 
     def robot(self, input, hidden):
-        output, hidden = self.model.robot(input, hidden)
+        output, hidden = self.model.R(input, hidden)
         return output, hidden
 
 
@@ -90,7 +104,7 @@ def main():
     fps = 2
 
     world = pygame.display.set_mode([1400,200])
-    modelname = 'models/test-rnn-2.pt'
+    modelname = 'models/team-1.pt'
 
     player = Player()
     joystick = Joystick()
