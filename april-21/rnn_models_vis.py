@@ -50,11 +50,14 @@ def main():
 
     number = sys.argv[1]
 
-    modelname = "models/robot-" + number + ".pt"
+    modelname = "models/noise-" + number + ".pt"
     model = Model(modelname)
-    len = np.random.randint(1, 8)
-    model.model.h_go = np.random.randint(0, 8, len)
-    
+    # len = np.random.randint(1, 8)
+    # model.model.h_go = np.random.randint(0, 8, len)
+
+    init = np.random.randint(0,7)
+    model.model.h_go = range(init, 8)
+
     plot_states(model)
     plot_ah(model)
     plot_ar(model)

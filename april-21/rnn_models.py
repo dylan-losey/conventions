@@ -36,13 +36,20 @@ class RNNAE(nn.Module):
         return (torch.zeros(1, 1, self.hidden_size), torch.zeros(1, 1, self.hidden_size))
 
 
+    # def human(self, s_star, t):
+    #     ah = torch.tensor(0.0)
+    #     if t in self.h_go:
+    #         if t < 4:
+    #             ah = (s_star - 0.6) / 0.2
+    #         else:
+    #             ah = (s_star - 0.6) / 0.4
+    #     return ah.view(1)
+
+
     def human(self, s_star, t):
-        ah = torch.tensor(0.0)
+        ah = torch.tensor(np.random.normal(0.0, 0.0))
         if t in self.h_go:
-            if t < 4:
-                ah = (s_star - 0.6) / 0.2
-            else:
-                ah = (s_star - 0.6) / 0.4
+            ah += (s_star - 0.6) / 0.4
         return ah.view(1)
 
 
@@ -79,8 +86,10 @@ class RNNAE(nn.Module):
 
     def loss(self):
         Q = 0.0
-        len = np.random.randint(1, 8)
-        self.h_go = np.random.randint(0, 8, len)
+        # len = np.random.randint(1, 8)
+        # self.h_go = np.random.randint(0, 8, len)
+        start = np.random.randint(0,7)
+        self.h_go = range(start,8)
         for s_star in self.omega:
             error, _, _, _ = self.rollout(s_star)
             Q += error
@@ -91,7 +100,7 @@ EPOCH = 10000
 LR = 0.01
 LR_STEP_SIZE = 2000
 LR_GAMMA = 0.1
-SAVENAME = "models/robot-3.pt"
+SAVENAME = "models/noise-3.pt"
 
 
 def main():

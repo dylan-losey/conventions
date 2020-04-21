@@ -9,7 +9,6 @@ import pickle
 import copy
 import torch
 from rnn_models import RNNAE
-from inter_models import TEAM
 import sys
 
 
@@ -94,7 +93,7 @@ def main():
     fps = 2
 
     world = pygame.display.set_mode([1400,200])
-    modelname = "models/robot-" + modelnumber + ".pt"
+    modelname = "models/noise-" + modelnumber + ".pt"
 
     player = Player()
     joystick = Joystick()
