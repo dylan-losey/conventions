@@ -50,7 +50,7 @@ def main():
 
     number = sys.argv[1]
 
-    modelname = "models/noise-" + number + ".pt"
+    modelname = "models/robot-" + number + ".pt"
     model = Model(modelname)
     # len = np.random.randint(1, 8)
     # model.model.h_go = np.random.randint(0, 8, len)

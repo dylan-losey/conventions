@@ -1,0 +1,25 @@
+Linear system: 
+s^{t+1} = s^t + b * a_r
+a_r = R(s^t, a_h^t)
+a_h = H(s^t, s^*, \hat{R})
+
+Policies:
+a_r^t = gamma_r^k * a_h^t
+a_h^t = gamma_h^k * (s^* - s^t)
+gamma_h = 1/(b * \hat{gamma})
+
+CL Dynamics:
+s^{t+1} = s^t + b*gamma_r*gamma_h*(s^* - s^t)
+s^{t+1} = s^t + k * (s^* - s^t)
+s^{t+1} = s^t + k * (s^* - s^t)
+
+s^{t+1} = (1 - k) * s^t + k * s^*
+s^{t+1} = (1 - k) * [(1 - k) * s^{t-1} + k * s^*] + k * s^*
+s^{t+1} = (1 - k)^T * s^0 + (1 - k) * k * (T - 1) * s^* + k * s^*
+
+same problem as before, a bunch of series...
+
+
+jing - connect to carrie
+add to slack
+share the code for autoencoder

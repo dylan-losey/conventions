@@ -93,7 +93,7 @@ def main():
     fps = 2
 
     world = pygame.display.set_mode([1400,200])
-    modelname = "models/noise-" + modelnumber + ".pt"
+    modelname = "models/robot-" + modelnumber + ".pt"
 
     player = Player()
     joystick = Joystick()

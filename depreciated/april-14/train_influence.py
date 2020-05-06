@@ -10,7 +10,7 @@ import sys
 
 savename = "influence.pt"
 model = Convention()
-model.alpha = 0.1
+model.alpha = 10
 
 LR = 0.1
 LR_STEP_SIZE = 300

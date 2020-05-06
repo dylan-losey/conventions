@@ -7,13 +7,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# constrain the human to only apply inputs for a certain timespan
+
 class Convention(nn.Module):
 
     def __init__(self):
         super(Convention, self).__init__()
 
         self.timestep = 0.05
-        self.n_steps = 21
+        self.n_steps = 41
         self.A = torch.tensor([[1, self.timestep], [0, 1]])
         self.B = torch.tensor([[0], [self.timestep]])
         self.Qcost = torch.tensor([[10.0, 0.0], [0.0, 1.0]])
@@ -48,7 +50,8 @@ class Convention(nn.Module):
     def human(self, s_star, s):
         x = torch.FloatTensor(s_star + s)
         h1 = torch.tanh(self.fch1(x))
-        return self.fch2(h1)
+        h2 = torch.tanh(self.fch2(h1))
+        return h2
 
     def robot(self, s, z):
         x = torch.cat((torch.FloatTensor(s), z), dim=0)
@@ -63,7 +66,9 @@ class Convention(nn.Module):
             zt = self.human_initial(s_star, s)
             s, z = self.dynamics(s_star, s)
             error += torch.transpose(e, 0, 1) @ self.Qcost @ e
-            effort += self.Rcost * z**2
+            if abs(z) > 0.01:
+                effort += 1
+            # effort += self.Rcost * z**2
             normal += (zt - z)**2
         e = s_star - s
         error += torch.transpose(e, 0, 1) @ self.Qcost @ e
