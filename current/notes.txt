@@ -1,0 +1,21 @@
+
+We have access to 4 policies (2 policy pairs)
+
+1. current (our behavior cloned human & robot response)
+2. ideal (our desired human & robot policies)
+
+
+Problem - influence human towards ideal
+
+Solution - change robot policy to guide human through intermediates
+Problem - how to identify intermediate robot policies?
+
+Method 1 - Leverage cost to interpolate
+minimize cost while:
+1. human = ideal human + robot = current robot
+2. human = current human + robot = ideal robot
+
+Method 2 - Interleave policies
+minimize cost
+mix current human with ideal human
+(sometimes play one sometimes the other)

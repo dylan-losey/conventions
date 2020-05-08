@@ -9,37 +9,39 @@ import pickle
 
 
 
-class R_MLP(nn.Module):
+class MLP_MLP(nn.Module):
 
     def __init__(self):
-        super(R_MLP, self).__init__()
-
-        self.human = MLP()
-        model_dict = torch.load("models/h_model.pt", map_location='cpu')
-        self.human.load_state_dict(model_dict)
-        self.human.eval
+        super(MLP_MLP, self).__init__()
 
         self.n_steps = 10
-        self.fc_1 = nn.Linear(4, 8)
-        self.fc_2 = nn.Linear(8, 8)
-        self.fc_3 = nn.Linear(8, 2)
-        self.relu = nn.ReLU()
+
+        self.fc_1 = nn.Linear(4, 4)
+        self.fc_2 = nn.Linear(4, 2)
+
+        self.rc_1 = nn.Linear(4, 8)
+        self.rc_2 = nn.Linear(8, 8)
+        self.rc_3 = nn.Linear(8, 2)
+
+    def prediction(self, x):
+        h1 = self.fc_1(x)
+        return torch.tanh(self.fc_2(h1))
 
     def policy(self, x):
-        h1 = torch.tanh(self.fc_1(x))
-        h2 = torch.tanh(self.fc_2(h1))
-        return self.fc_3(h2)
+        h1 = torch.tanh(self.rc_1(x))
+        h2 = torch.tanh(self.rc_2(h1))
+        return self.rc_3(h2)
 
     def rollout(self, s_star, s_0):
         error = 0.0
         s = torch.FloatTensor(s_0)
         for t in range(self.n_steps):
             x = torch.cat((s, s_star), 0)
-            ah = self.human.prediction(x).detach()
+            ah = self.prediction(x)
             context = torch.cat((s, ah), 0)
             ar = self.policy(context)
             s = s + 0.1 * ar
-            error += 10.0 * torch.norm(ah - ar) + torch.norm(s - s_star)**2
+            error += torch.norm(s - s_star)**2 + torch.norm(ah[1])
         return error
 
     def loss(self):
@@ -60,9 +62,9 @@ def main():
     LR = 0.01
     LR_STEP_SIZE = 300
     LR_GAMMA = 0.1
-    savename = "models/r_model.pt"
+    savename = "models/sp_model.pt"
 
-    model = R_MLP()
+    model = MLP_MLP()
     optimizer = optim.Adam(model.parameters(), lr=LR)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=LR_STEP_SIZE, gamma=LR_GAMMA)
 

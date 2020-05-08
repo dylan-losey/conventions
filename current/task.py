@@ -4,14 +4,17 @@ import numpy as np
 import pickle
 import torch
 from respond import R_MLP
+from selfplay import MLP_MLP
+from ideal import STAR_MLP
+from influence import I_MLP
 
 
 
 class Model(object):
 
     def __init__(self):
-        self.model = R_MLP()
-        model_dict = torch.load("models/r_model.pt", map_location='cpu')
+        self.model = I_MLP()
+        model_dict = torch.load(self.model.name, map_location='cpu')
         self.model.load_state_dict(model_dict)
         self.model.eval
 

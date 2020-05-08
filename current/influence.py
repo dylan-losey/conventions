@@ -5,26 +5,42 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from clone import MLP
+from respond import R_MLP
+from ideal import STAR_MLP
 import pickle
 
 
 
-class R_MLP(nn.Module):
+class I_MLP(nn.Module):
 
     def __init__(self):
-        super(R_MLP, self).__init__()
+        super(I_MLP, self).__init__()
 
-        self.name = "models/r_model.pt"
+        self.name = "models/inf_model.pt"
         self.n_steps = 10
 
-        self.human = MLP()
-        model_dict = torch.load("models/h_model.pt", map_location='cpu')
-        self.human.load_state_dict(model_dict)
-        self.human.eval
+        self.fc_1 = nn.Linear(4, 4)
+        self.fc_2 = nn.Linear(4, 2)
+        # model_dict = torch.load("models/h_model.pt", map_location='cpu')
+        # self.load_state_dict(model_dict)
+
+        self.robot = R_MLP()
+        model_dict = torch.load(self.robot.name, map_location='cpu')
+        self.robot.load_state_dict(model_dict)
+        self.robot.eval
 
         self.rc_1 = nn.Linear(4, 8)
         self.rc_2 = nn.Linear(8, 8)
         self.rc_3 = nn.Linear(8, 2)
+
+    def ideal_human(self, x):
+        if x[2] > 0.5:
+            return torch.FloatTensor([-1.0,0.0])
+        return torch.FloatTensor([1.0,0.0])
+
+    def prediction(self, x):
+        h1 = self.fc_1(x)
+        return self.fc_2(h1)
 
     def policy(self, x):
         h1 = torch.tanh(self.rc_1(x))
@@ -36,11 +52,15 @@ class R_MLP(nn.Module):
         s = torch.FloatTensor(s_0)
         for t in range(self.n_steps):
             x = torch.cat((s, s_star), 0)
-            ah = self.human.prediction(x).detach()
+            ah_star = self.ideal_human(x)
+            ah = self.prediction(x)
             context = torch.cat((s, ah), 0)
+            ar_curr = self.robot.policy(context).detach()
             ar = self.policy(context)
             s = s + 0.1 * ar
-            error += torch.norm(s_star - s) + 0.5 * torch.norm(ar - ah)
+            error += torch.norm(s_star - s)
+            error += 0.1 * torch.norm(ar_curr - ar)
+            error += 1.0 * torch.norm(ah_star - ah)
         return error
 
     def loss(self):
@@ -61,9 +81,9 @@ def main():
     LR = 0.01
     LR_STEP_SIZE = 300
     LR_GAMMA = 0.1
-    savename = "models/r_model.pt"
+    savename = "models/inf_model.pt"
 
-    model = R_MLP()
+    model = I_MLP()
     optimizer = optim.Adam(model.parameters(), lr=LR)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=LR_STEP_SIZE, gamma=LR_GAMMA)
 
