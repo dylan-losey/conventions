@@ -14,6 +14,7 @@ class STAR_MLP(nn.Module):
         super(STAR_MLP, self).__init__()
 
         self.n_steps = 10
+        self.name = "models/ideal_model.pt"
 
         self.rc_1 = nn.Linear(4, 8)
         self.rc_2 = nn.Linear(8, 8)

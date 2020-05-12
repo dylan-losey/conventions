@@ -3,17 +3,17 @@ import sys
 import numpy as np
 import pickle
 import torch
-from respond import R_MLP
+import math
+from clone import MLP
 from selfplay import MLP_MLP
-from ideal import STAR_MLP
-from influence import I_MLP
+from influence import I_MLP_MLP
 
 
 
 class Model(object):
 
     def __init__(self):
-        self.model = I_MLP()
+        self.model = I_MLP_MLP()
         model_dict = torch.load(self.model.name, map_location='cpu')
         self.model.load_state_dict(model_dict)
         self.model.eval
@@ -34,8 +34,35 @@ class Joystick(object):
             z1 = 0.0
         if abs(z2) < self.DEADBAND:
             z2 = 0.0
-        e_stop = self.gamepad.get_button(7)
-        return np.array([z1, z2]), e_stop
+        start = self.gamepad.get_button(0)
+        stop = self.gamepad.get_button(7)
+        return np.array([z1, z2]), start, stop
+
+
+def net_display(screen, f, x, y, thickness=5, trirad=8):
+
+    x = (x * 600) + 100
+    y = (y * 600) + 100
+    f *= 100.0
+
+    start = [x, y]
+    fx = f[0]
+    fy = f[1]
+    end = [0,0]
+    end[0] = start[0]+fx
+    end[1] = start[1]+fy
+    rad = np.pi/180
+
+    lcolor = (255, 179, 128)
+    tricolor = (255, 179, 128)
+    pygame.draw.line(screen, lcolor, start, end, thickness)
+    rotation = (math.atan2(start[1] - end[1], end[0] - start[0])) + np.pi/2
+    pygame.draw.polygon(screen, tricolor, ((end[0] + trirad * np.sin(rotation),
+                                        end[1] + trirad * np.cos(rotation)),
+                                       (end[0] + trirad * np.sin(rotation - 120*rad),
+                                        end[1] + trirad * np.cos(rotation - 120*rad)),
+                                       (end[0] + trirad * np.sin(rotation + 120*rad),
+                                        end[1] + trirad * np.cos(rotation + 120*rad))))
 
 
 class Goal(pygame.sprite.Sprite):
@@ -90,22 +117,21 @@ def main():
 
     n_test = sys.argv[1]
     savename = 'tests/test' + n_test + '.pkl'
+    model = Model()
 
     pygame.init()
     world = pygame.display.set_mode([800,800])
     clock = pygame.time.Clock()
     fps = 10
 
-    start = np.random.random(2)
+    start = [0.25, 0.25]
+    goal = [0.75, 0.8]
     player = Player(start[0], start[1])
+    target = Goal(goal[0], goal[1])
     joystick = Joystick()
-    model = Model()
-    g1 = Goal(1.0, 0.0)
-    g2 = Goal(0.0, 1.0)
     sprite_list = pygame.sprite.Group()
     sprite_list.add(player)
-    sprite_list.add(g1)
-    sprite_list.add(g2)
+    sprite_list.add(target)
 
     world.fill((0,0,0))
     sprite_list.draw(world)
@@ -113,22 +139,32 @@ def main():
     clock.tick(fps)
     data = []
 
+    while True:
+
+        ah, start, stop = joystick.input()
+        if start:
+            break
 
     while True:
 
         # human
-        ah, e_stop = joystick.input()
-        data.append([player.x, player.y, g1.x, g1.y, g2.x, g2.y] + list(ah))
-        if e_stop:
+        ah, start, stop = joystick.input()
+        data.append([player.x, player.y, target.x, target.y] + list(ah))
+        print([player.x, player.y, target.x, target.y] + list(ah))
+        if stop:
             pickle.dump(data, open(savename, "wb" ))
             print(data)
             pygame.quit(); sys.exit()
 
+        # human model
+        context = torch.FloatTensor([player.x, player.y, target.x, target.y])
+        ah = model.model.human(context)
+        # ah = torch.FloatTensor(ah)
+
         # robot
         s = torch.FloatTensor([player.x, player.y])
-        ah = torch.FloatTensor(ah)
-        context = torch.cat((s, ah), 0)
-        ar = model.model.policy(context).detach().numpy()
+        ar = model.model.robot(torch.cat((s, ah), 0)).detach().numpy()
+        ar *= 4.0
         # ar = ah
 
         # dynamics
@@ -137,6 +173,7 @@ def main():
         # animate
         world.fill((0,0,0))
         sprite_list.draw(world)
+        net_display(world, ah, player.x, player.y)
         pygame.display.flip()
         clock.tick(fps)
 

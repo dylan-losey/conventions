@@ -14,8 +14,20 @@ Method 1 - Leverage cost to interpolate
 minimize cost while:
 1. human = ideal human + robot = current robot
 2. human = current human + robot = ideal robot
+Finding: this seems to get trapped in one policy or the other
+Multiple cost functions, and they compete
 
 Method 2 - Interleave policies
 minimize cost
 mix current human with ideal human
 (sometimes play one sometimes the other)
+Finding: gets policy that is robust to both inputs
+Does not "influence" the human, but they can change
+
+Method 3 - Interpolate policy weights
+Finding: directly interpolating does not complete task
+Who do you train it against? Works as seeding.
+
+Method 4 - Minimize cost while regularizing
+minimize cost for ideal policies
+while keeping human close to current

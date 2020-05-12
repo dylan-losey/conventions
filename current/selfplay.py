@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
-from clone import MLP
 import pickle
 
 
@@ -15,6 +14,7 @@ class MLP_MLP(nn.Module):
         super(MLP_MLP, self).__init__()
 
         self.n_steps = 10
+        self.name = "models/sp_model.pt"
 
         self.fc_1 = nn.Linear(4, 4)
         self.fc_2 = nn.Linear(4, 2)
@@ -41,7 +41,9 @@ class MLP_MLP(nn.Module):
             context = torch.cat((s, ah), 0)
             ar = self.policy(context)
             s = s + 0.1 * ar
-            error += torch.norm(s - s_star)**2 + torch.norm(ah[1])
+            error += torch.norm(s - s_star)**2
+            error += torch.tanh(ah[0]) + torch.tanh(ah[1])
+            error += torch.norm(ah)
         return error
 
     def loss(self):
