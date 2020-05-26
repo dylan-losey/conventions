@@ -4,12 +4,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
+import pickle
 
 
 class MotionData(Dataset):
 
     def __init__(self, filename):
         self.data = pickle.load(open(filename, "rb"))
+        print(len(self.data))
 
     def __len__(self):
         return len(self.data)
@@ -24,15 +26,13 @@ class MLP(nn.Module):
     def __init__(self):
         super(MLP, self).__init__()
 
-        self.fc_1 = nn.Linear(8, 8)
-        self.fc_2 = nn.Linear(8, 8)
-        self.fc_3 = nn.Linear(8, 4)
+        self.fc_1 = nn.Linear(8, 16)
+        self.fc_2 = nn.Linear(16, 4)
         self.loss = nn.CrossEntropyLoss()
 
-    def prediction(self, x):
+    def forward(self, x):
         h1 = torch.tanh(self.fc_1(x))
-        h2 = torch.tanh(self.fc_2(h1))
-        return self.fc_3(h2)
+        return self.fc_2(h1)
 
 
 def main():
@@ -41,11 +41,11 @@ def main():
 
     EPOCH = 10000
     BATCH_SIZE_TRAIN = 500
-    LR = 0.1
+    LR = 0.01
     LR_STEP_SIZE = 2000
     LR_GAMMA = 0.1
 
-    dataname = "test.pkl"
+    dataname = "test1.pkl"
     savename = "mlp_model.pt"
 
     train_data = MotionData(dataname)
@@ -59,7 +59,7 @@ def main():
             optimizer.zero_grad()
             s = x[:,0:8]
             a = x[:,8].long()
-            ahat = model.prediction(s)
+            ahat = model(s)
             loss = model.loss(ahat, a)
             loss.backward()
             optimizer.step()

@@ -6,6 +6,7 @@ import sys
 import pickle
 import numpy as np
 from dqn import QNetwork
+from clone import MLP
 
 
 class Joystick(object):
@@ -39,15 +40,18 @@ def main():
     env = gym.make("LanderCustom-v0")
     fx_init = float(sys.argv[1])
     Q_threshold = float(sys.argv[2])
-    savename = 'test.pkl'
+    savename = 'test1.pkl'
 
     joystick = Joystick()
     qnetwork = QNetwork(state_size=8, action_size=4, seed=0)
     qnetwork.load_state_dict(torch.load('basic_lander.pth'))
     qnetwork.eval()
-    softmax = torch.nn.Softmax(dim=0)
 
-    episodes = 5
+    human = MLP()
+    human.load_state_dict(torch.load('mlp_model.pt'))
+    human.eval()
+
+    episodes = 10
     scores = []
     data = []
     env.start_state(fx_init, 0.0)
@@ -73,7 +77,12 @@ def main():
             with torch.no_grad():
                 state = torch.from_numpy(state).float()
                 Q_values = qnetwork(state).data.numpy()
+                action_pred_dist = human(state).data.numpy()
             action_star = np.argmax(Q_values)
+            action_pred = np.argmax(action_pred_dist)
+
+            # action = action_pred
+
             loss = Q_values[action_star] - Q_values[action]
             if loss > Q_threshold:
                 action = action_star
@@ -84,7 +93,7 @@ def main():
 
             if done or stop:
                 print(episode, score)
-                pickle.dump(data, open(savename, "wb" ))
+                # pickle.dump(data, open(savename, "wb" ))
                 break
             time.sleep(0.025)
 

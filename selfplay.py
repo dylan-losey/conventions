@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from dqn import QNetwork
 import sys
+from clone import MLP
 
 
 def main():
@@ -13,7 +14,10 @@ def main():
     qnetwork = QNetwork(state_size=8, action_size=4, seed=0)
     qnetwork.load_state_dict(torch.load('basic_lander.pth'))
     qnetwork.eval()
-    softmax = torch.nn.Softmax(dim=0)
+
+    human = MLP()
+    human.load_state_dict(torch.load('mlp_model.pt'))
+    human.eval()
 
     fx_init = float(sys.argv[1])
     Q_threshold = float(sys.argv[2])
@@ -29,11 +33,15 @@ def main():
 
         while True:
 
-            action = np.random.randint(0, 4)
             with torch.no_grad():
                 state = torch.from_numpy(state).float()
                 Q_values = qnetwork(state).data.numpy()
+                action_pred_dist = human(state).data.numpy()
             action_star = np.argmax(Q_values)
+            action = np.argmax(action_pred_dist)
+
+            # action = np.random.randint(0, 4)
+
             loss = Q_values[action_star] - Q_values[action]
             if loss > Q_threshold:
                 action = action_star
@@ -43,7 +51,7 @@ def main():
             score += reward
 
             if done:
-                # print(episode, score)
+                print(episode, score)
                 break
 
         scores.append(score)
