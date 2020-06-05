@@ -10,6 +10,7 @@ import torch.optim as optim
 import pickle
 import random
 import copy
+import os
 
 
 class MotionData(Dataset):
@@ -60,16 +61,17 @@ def rollout(force_x, Q_threshold, modelname):
 
     while True:
 
+        # get robot and human actions
         with torch.no_grad():
             state = torch.from_numpy(state).float()
             Q_values = qnetwork(state).data.numpy()
             action_star = np.argmax(Q_values)
+            action = np.random.choice(np.arange(4))
             if modelname is not None:
                 action_pred_dist = softmax(human(state).data).numpy()
                 action = np.random.choice(np.arange(4), p=action_pred_dist)
-            else:
-                action = np.random.choice(np.arange(4))
 
+        # save data
         loss = Q_values[action_star] - Q_values[action]
         dataset.append(list(state.numpy()) + [action, loss, action_star])
 
@@ -77,6 +79,7 @@ def rollout(force_x, Q_threshold, modelname):
         if loss > Q_threshold:
             action = action_star
 
+        # update environment
         # env.render()
         state, reward, done, _ = env.step(action)
         score += reward
@@ -90,7 +93,7 @@ def rollout(force_x, Q_threshold, modelname):
 
 def target(modelname):
     score = 0.0
-    n_episodes = 10
+    n_episodes = 5
     for idx in range(n_episodes):
         score1, _ = rollout(0.0, 1e3, modelname)
         score2, _ = rollout(+500.0, 1e3, modelname)
@@ -134,13 +137,11 @@ def train(dataset, modelname, savename):
 
     model = MLP()
     LR = 0.01
-    EPOCH = 100
+    EPOCH = 200
     if modelname is not None:
-        LR = 0.01
-        EPOCH = 100
         model.load_state_dict(torch.load(modelname))
 
-    BATCH_SIZE_TRAIN = 1000
+    BATCH_SIZE_TRAIN = 500
 
     train_data = MotionData(dataset)
     train_set = DataLoader(dataset=train_data, batch_size=BATCH_SIZE_TRAIN, shuffle=True)
@@ -155,6 +156,8 @@ def train(dataset, modelname, savename):
             loss = model.loss(ahat, a)
             loss.backward()
             optimizer.step()
+        # print(epoch, loss.item())
+    os.remove(savename)
     torch.save(model.state_dict(), savename)
 
 
@@ -170,68 +173,54 @@ def main():
     humandata = []
     humanscore = 0
 
-
     mdp1 = [0.0, 1.0]
-    mdp2 = [0.0, 7.5]
-    mdp3 = [0.0, 20.0]
+    mdp2 = [0.0, 5.0]
+    mdp3 = [0.0, 10.0]
+    mdp4 = [0.0, 20.0]
+    mdp5 = [0.0, 40.0]
+    MDPs = [mdp1, mdp2, mdp3, mdp4, mdp5]
+
+    curriculum = []
 
     while humanscore < 200:
 
-        dataset1 = fail_human(mdp1[0], mdp1[1], humanmodel)
-        dataset2 = fail_human(mdp2[0], mdp2[1], humanmodel)
-        dataset3 = fail_human(mdp3[0], mdp3[1], humanmodel)
+        modelname_next = None
+        humandata_next = None
+        max_score = -np.Inf
 
-        dataset1 = random.sample(dataset1, k=min(500,len(dataset1)))
-        dataset2 = random.sample(dataset2, k=min(500,len(dataset2)))
-        dataset3 = random.sample(dataset3, k=min(500,len(dataset3)))
+        for count, M in enumerate(MDPs):
 
-        humandata1 = humandata + dataset1
-        humandata2 = humandata + dataset2
-        humandata3 = humandata + dataset3
+            dataset_M = success_human(M[0], M[1], humanmodel)
+            dataset_M = random.sample(dataset_M, k=min(500,len(dataset_M)))
+            humandata_M = humandata + dataset_M
 
-        if len(humandata1) > 0:
-            train(humandata1, humanmodel, 'test1.pt')
-            score1 = target('test1.pt')
-        else:
-            score1 = -np.Inf
+            modelname = 'test' + str(count) + ".pt"
+            score_M = -np.Inf
+            if len(humandata_M) > 0:
+                train(humandata_M, humanmodel, modelname)
+                score_M = target(modelname)
+            print("MDP: ", M, "Score: ", score_M)
 
-        if len(humandata2) > 0:
-            train(humandata2, humanmodel, 'test2.pt')
-            score2 = target('test2.pt')
-        else:
-            score2 = -np.Inf
-
-        if len(humandata3) > 0:
-            train(humandata3, humanmodel, 'test3.pt')
-            score3 = target('test3.pt')
-        else:
-            score3 = -np.Inf
-
-        if score1 > score2 and score1 > score3:
-            store('test1.pt', 'eval.pt')
-            humandata = copy.deepcopy(humandata1)
-            humanscore = score1
-            print('#1 is best')
-
-        elif score2 > score1 and score2 > score3:
-            store('test2.pt', 'eval.pt')
-            humandata = copy.deepcopy(humandata2)
-            humanscore = score2
-            print('#2 is best')
-
-        elif score3 > score1 and score3 > score2:
-            store('test3.pt', 'eval.pt')
-            humandata = copy.deepcopy(humandata3)
-            humanscore = score3
-            print('#3 is best')
+            if score_M > max_score:
+                max_score = score_M
+                modelname_next = modelname
+                humandata_next = copy.deepcopy(humandata_M)
 
         humanmodel = 'eval.pt'
+        humanscore = max_score
+        store(modelname_next, 'eval.pt')
+        humandata = humandata_next
+        curr_MDP = int(modelname_next[4])
+        print("Provided MDP: ", curr_MDP)
+        curriculum.append(curr_MDP)
 
-        print('mdp1: ', score1)
-        print('mpd2: ', score2)
-        print('mpd3: ', score3)
-
+    print("Full curriculum: ", curriculum)
+    return curriculum
 
 
 if __name__ == "__main__":
-    main()
+    C = []
+    for idx in range(10):
+        curriculum = main()
+        C.append(curriculum)
+    print("Overall: ", C)
