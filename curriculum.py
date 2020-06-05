@@ -17,7 +17,7 @@ class MotionData(Dataset):
 
     def __init__(self, dataset):
         self.data = dataset
-        print("The dataset contains this many datapoints: ", len(self.data))
+        # print("The dataset contains this many datapoints: ", len(self.data))
 
     def __len__(self):
         return len(self.data)
@@ -91,9 +91,8 @@ def rollout(force_x, Q_threshold, modelname):
     return score, dataset
 
 
-def target(modelname):
+def target(modelname, n_episodes):
     score = 0.0
-    n_episodes = 5
     for idx in range(n_episodes):
         score1, _ = rollout(0.0, 1e3, modelname)
         score2, _ = rollout(+500.0, 1e3, modelname)
@@ -103,9 +102,8 @@ def target(modelname):
     return score
 
 
-def success_human(force_x, Q_threshold, modelname):
+def success_human(force_x, Q_threshold, modelname, n_episodes):
     dataset = []
-    n_episodes = 5
     for idx in range(n_episodes):
         score, data = rollout(force_x, Q_threshold, modelname)
         if score > 100:
@@ -118,9 +116,8 @@ def success_human(force_x, Q_threshold, modelname):
     return dataset
 
 
-def fail_human(force_x, Q_threshold, modelname):
+def fail_human(force_x, Q_threshold, modelname, n_episodes):
     dataset = []
-    n_episodes = 5
     for idx in range(n_episodes):
         score, data = rollout(force_x, Q_threshold, modelname)
         if score < 100:
@@ -173,6 +170,9 @@ def main():
     humandata = []
     humanscore = 0
 
+    n_episodes = 5
+    n_datapoints = 20
+
     mdp1 = [0.0, 1.0]
     mdp2 = [0.0, 5.0]
     mdp3 = [0.0, 10.0]
@@ -181,24 +181,28 @@ def main():
     MDPs = [mdp1, mdp2, mdp3, mdp4, mdp5]
 
     curriculum = []
+    iteration = 0
 
-    while humanscore < 200:
+    # while humanscore < 200:
+    for count in range(5):
 
+        iteration += 1
+        print("Iteration #: ", iteration)
         modelname_next = None
         humandata_next = None
         max_score = -np.Inf
 
         for count, M in enumerate(MDPs):
 
-            dataset_M = success_human(M[0], M[1], humanmodel)
-            dataset_M = random.sample(dataset_M, k=min(500,len(dataset_M)))
+            dataset_M = fail_human(M[0], M[1], humanmodel, n_episodes)
+            dataset_M = random.sample(dataset_M, k=min(n_datapoints,len(dataset_M)))
             humandata_M = humandata + dataset_M
 
             modelname = 'test' + str(count) + ".pt"
             score_M = -np.Inf
             if len(humandata_M) > 0:
                 train(humandata_M, humanmodel, modelname)
-                score_M = target(modelname)
+                score_M = target(modelname, n_episodes)
             print("MDP: ", M, "Score: ", score_M)
 
             if score_M > max_score:
@@ -209,7 +213,7 @@ def main():
         humanmodel = 'eval.pt'
         humanscore = max_score
         store(modelname_next, 'eval.pt')
-        humandata = humandata_next
+        humandata = copy.deepcopy(humandata_next)
         curr_MDP = int(modelname_next[4])
         print("Provided MDP: ", curr_MDP)
         curriculum.append(curr_MDP)
@@ -220,7 +224,9 @@ def main():
 
 if __name__ == "__main__":
     C = []
-    for idx in range(10):
+    n_runs = int(sys.argv[1])
+    for idx in range(n_runs):
+        print("ROUND #: ", idx)
         curriculum = main()
         C.append(curriculum)
     print("Overall: ", C)
