@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-curriculum_fail =
+curriculum_fail = [[4, 4, 1, 3, 4], [4, 4, 3, 2, 4], [4, 4, 0, 4, 2], [2, 4, 4, 3, 0], [3, 3, 3, 1, 3], [4, 1, 1, 2, 3], [3, 3, 4, 4, 1], [3, 1, 2, 2, 4], [2, 2, 0, 1, 0], [4, 4, 2, 3, 3], [3, 2, 2, 3, 0], [3, 4, 3, 4, 2], [3, 4, 3, 3, 2], [4, 4, 1, 2, 0], [4, 1, 2, 3, 4], [4, 3, 2, 2, 3], [3, 0, 4, 1, 3], [4, 1, 3, 4, 3], [1, 1, 4, 0, 2], [2, 1, 3, 2, 1], [4, 0, 1, 3, 2], [1, 3, 4, 2, 4], [4, 2, 2, 4, 2], [3, 2, 4, 3, 0], [4, 4, 3, 2, 0], [3, 0, 4, 2, 1], [4, 2, 1, 3, 3], [4, 1, 4, 0, 0], [2, 3, 1, 1, 3], [1, 0, 2, 4, 3]]
 cf = np.asarray(curriculum_fail)
 cf_mean = np.mean(cf,axis=0)
 cf_std = np.std(cf,axis=0)
@@ -23,5 +23,5 @@ plt.yticks([0, 1, 2, 3, 4], ['max SA', 'mdp1', 'mdp2', 'mdp3', 'min SA'])
 plt.xlabel("Iteration #")
 plt.title("Greedy Curriculum")
 
-plt.legend(('','Failure','','Success'))
+plt.legend(('','','Failure','Success'))
 plt.show()
