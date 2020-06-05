@@ -199,6 +199,15 @@ def train(agent,
     for i_episode in range(1, n_episodes+1):
         state = env.reset()
         score = 0
+        # custom part to iterate over the three different start states.
+        if i_episode % 3 == 0:
+            force_x = 0.0
+        elif i_episode % 3 == 1:
+            force_x = +500.0
+        else:
+            force_x = -500.0
+        env.start_state(force_x, 0.0)
+        # remove above for regular version
         for t in range(max_t):
             action = agent.act(state, eps)
             next_state, reward, done, _ = env.step(action)

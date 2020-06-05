@@ -11,7 +11,7 @@ class MotionData(Dataset):
 
     def __init__(self, filename):
         self.data = pickle.load(open(filename, "rb"))
-        print(len(self.data))
+        print("The dataset contains this many datapoints: ", len(self.data))
 
     def __len__(self):
         return len(self.data)
@@ -39,16 +39,17 @@ def main():
 
     model = MLP()
 
-    EPOCH = 10000
-    BATCH_SIZE_TRAIN = 500
+    EPOCH = 1000
+    BATCH_SIZE_RATIO = 10.0
     LR = 0.01
-    LR_STEP_SIZE = 2000
+    LR_STEP_SIZE = 400
     LR_GAMMA = 0.1
 
-    dataname = "test1.pkl"
-    savename = "mlp_model.pt"
+    dataname = "expert_dataset.pkl"
+    savename = "expert_bc.pt"
 
     train_data = MotionData(dataname)
+    BATCH_SIZE_TRAIN = int(len(train_data) / BATCH_SIZE_RATIO)
     train_set = DataLoader(dataset=train_data, batch_size=BATCH_SIZE_TRAIN, shuffle=True)
 
     optimizer = optim.Adam(model.parameters(), lr=LR)

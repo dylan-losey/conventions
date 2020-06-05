@@ -1,5 +1,4 @@
 import gym
-import time
 import torch
 import numpy as np
 from dqn import QNetwork
@@ -16,18 +15,24 @@ def main():
     qnetwork.eval()
 
     human = MLP()
-    human.load_state_dict(torch.load('mlp_model.pt'))
+    human.load_state_dict(torch.load('expert_bc.pt'))
     human.eval()
+    softmax = torch.nn.Softmax(dim=0)
 
-    fx_init = float(sys.argv[1])
-    Q_threshold = float(sys.argv[2])
-
-    episodes = 100
+    episodes = 30
     scores = []
-    env.start_state(fx_init, 0)
+    Q_threshold = 1e-2
 
     for episode in range(episodes):
 
+        if episode < 10:
+            force_x = 0.0
+        elif episode < 20:
+            force_x = +500.0
+        else:
+            force_x = -500.0
+
+        env.start_state(force_x, 0.0)
         state = env.reset()
         score = 0
 
@@ -36,29 +41,25 @@ def main():
             with torch.no_grad():
                 state = torch.from_numpy(state).float()
                 Q_values = qnetwork(state).data.numpy()
-                action_pred_dist = human(state).data.numpy()
+                action_pred_dist = softmax(human(state).data).numpy()
             action_star = np.argmax(Q_values)
-            action = np.argmax(action_pred_dist)
-
-            # action = np.random.randint(0, 4)
+            action = np.random.choice(np.arange(4), p=action_pred_dist)
 
             loss = Q_values[action_star] - Q_values[action]
-            if loss > Q_threshold:
-                action = action_star
+            # if loss > Q_threshold:
+            #     action = action_star
 
             # env.render()
             state, reward, done, _ = env.step(action)
             score += reward
-
             if done:
-                print(episode, score)
+                print("episode: ", episode, "score: ", score)
                 break
 
         scores.append(score)
 
     env.close()
-    # print(scores)
-    print(np.mean(np.array(scores)))
+    print("The average score is: ", np.mean(np.array(scores)))
 
 
 if __name__ == "__main__":
