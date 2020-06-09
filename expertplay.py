@@ -5,29 +5,19 @@ from dqn import QNetwork
 import sys
 import pickle
 
-
-def main():
+def rollout(modelname):
 
     env = gym.make("LanderCustom-v0")
-    savename = 'expert_dataset.pkl'
-
     qnetwork = QNetwork(state_size=8, action_size=4, seed=0)
-    qnetwork.load_state_dict(torch.load('basic_lander.pth'))
+    qnetwork.load_state_dict(torch.load(modelname))
     qnetwork.eval()
 
     episodes = 30
     scores = []
-    dataset = []
 
     for episode in range(episodes):
 
-        if episode < 10:
-            force_x = 0.0
-        elif episode < 20:
-            force_x = +500.0
-        else:
-            force_x = -500.0
-
+        force_x = +500.0
         env.start_state(force_x, 0.0)
         state = env.reset()
         score = 0
@@ -39,8 +29,6 @@ def main():
                 Q_values = qnetwork(state)
                 action = np.argmax(Q_values.cpu().data.numpy())
 
-            dataset.append(list(state) + [action])
-
             # env.render()
             state, reward, done, _ = env.step(action)
             score += reward
@@ -51,8 +39,20 @@ def main():
         scores.append(score)
 
     env.close()
-    pickle.dump(dataset, open(savename, "wb"))
     print("The average score is: ", np.mean(np.array(scores)))
+    return(scores)
+
+
+def main():
+    Q_threshold = 1000.0
+    S = []
+    for savenumber in range(10):
+        modelname = "RL_" + str(Q_threshold) + "_" + str(savenumber) + ".pkl"
+        scores = rollout(modelname)
+        S.append(scores)
+    print(S)
+
+
 
 
 if __name__ == "__main__":
