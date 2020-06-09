@@ -196,18 +196,10 @@ def train(agent,
     scores = []                        # list containing scores from each episode
     scores_window = deque(maxlen=100)  # last 100 scores
     eps = eps_start                    # initialize epsilon
+    savenumber = 0
     for i_episode in range(1, n_episodes+1):
         state = env.reset()
         score = 0
-        # custom part to iterate over the three different start states.
-        if i_episode % 3 == 0:
-            force_x = 0.0
-        elif i_episode % 3 == 1:
-            force_x = +500.0
-        else:
-            force_x = -500.0
-        env.start_state(force_x, 0.0)
-        # remove above for regular version
         for t in range(max_t):
             action = agent.act(state, eps)
             next_state, reward, done, _ = env.step(action)
@@ -221,13 +213,14 @@ def train(agent,
         eps = max(eps_end, eps_decay*eps) # decrease epsilon
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), end="")
         if i_episode % 100 == 0:
+            savename = "dqn_" + str(savenumber) + ".pth"
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
-            torch.save(agent.qnetwork_local.state_dict(), 'basic_lander.pth')
-    torch.save(agent.qnetwork_local.state_dict(), 'basic_lander.pth')
+            torch.save(agent.qnetwork_local.state_dict(), savename)
+            savenumber += 1
     return scores
 
 if __name__ == "__main__":
-    env = gym.make("LanderCustom-v0")
+    env = gym.make("LunarLander-v2")
     env.seed(0)
     agent = Agent(state_size=8, action_size=4, seed=0)
     train(agent)

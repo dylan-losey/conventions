@@ -183,7 +183,7 @@ class ReplayBuffer:
         return len(self.memory)
 
 def train(agent,
-    n_episodes=1000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.995):
+    n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.995):
     """Deep Q-Learning.
 
     Params
@@ -200,31 +200,24 @@ def train(agent,
     eps = eps_start                    # initialize epsilon
 
     qnetwork_star = QNetwork(state_size=8, action_size=4, seed=0)
-    qnetwork_star.load_state_dict(torch.load('basic_lander.pth'))
+    qnetwork_star.load_state_dict(torch.load('dqn_16.pth'))
     qnetwork_star.eval()
-    softmax = torch.nn.Softmax(dim=0)
-
-    force_x = +500.0
-    Q_threshold = 1000.0
+    Q_threshold = 0.0
     savenumber = 0
 
     for i_episode in range(1, n_episodes+1):
-        env.start_state(force_x, 0.0)
         state = env.reset()
         score = 0
         for t in range(max_t):
             action = agent.act(state, eps)
+
+            # shared autonomy
+            to_add = True
             with torch.no_grad():
                 state = torch.from_numpy(state).float()
                 Q_values = qnetwork_star(state).data.numpy()
                 action_star = np.argmax(Q_values)
-
-            # save data
             loss = Q_values[action_star] - Q_values[action]
-            # dataset.append(list(state.numpy()) + [action, loss, action_star])
-
-            # shared autonomy
-            to_add = True
             if loss > Q_threshold:
                 to_add = False
                 action = action_star
@@ -235,19 +228,20 @@ def train(agent,
             score += reward
             if done:
                 break
+        Q_threshold += 0.1
         scores_window.append(score)       # save most recent score
         scores.append(score)              # save most recent score
         eps = max(eps_end, eps_decay*eps) # decrease epsilon
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), end="")
         if i_episode % 100 == 0:
-            savename = "RL_" + str(Q_threshold) + "_" + str(savenumber) + ".pkl"
+            savename = "assisted_" + str(savenumber) + ".pkl"
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
             torch.save(agent.qnetwork_local.state_dict(), savename)
             savenumber += 1
     return scores
 
 if __name__ == "__main__":
-    env = gym.make("LanderCustom-v0")
+    env = gym.make("LunarLander-v2")
     env.seed(0)
     agent = Agent(state_size=8, action_size=4, seed=0)
     train(agent)

@@ -7,22 +7,21 @@ import pickle
 
 def rollout(modelname):
 
-    env = gym.make("LanderCustom-v0")
+    env = gym.make("LunarLander-v2")
     qnetwork = QNetwork(state_size=8, action_size=4, seed=0)
     qnetwork.load_state_dict(torch.load(modelname))
     qnetwork.eval()
 
-    episodes = 30
+    episodes = 10
     scores = []
+    max_t = 1000
 
     for episode in range(episodes):
 
-        force_x = +500.0
-        env.start_state(force_x, 0.0)
         state = env.reset()
         score = 0
 
-        while True:
+        for t in range(max_t):
 
             with torch.no_grad():
                 state = torch.from_numpy(state).float()
@@ -44,10 +43,9 @@ def rollout(modelname):
 
 
 def main():
-    Q_threshold = 1000.0
     S = []
-    for savenumber in range(10):
-        modelname = "RL_" + str(Q_threshold) + "_" + str(savenumber) + ".pkl"
+    for savenumber in range(17):
+        modelname = "assisted_" + str(savenumber) + ".pkl"
         scores = rollout(modelname)
         S.append(scores)
     print(S)

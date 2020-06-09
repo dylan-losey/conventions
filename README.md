@@ -32,3 +32,5 @@ than garbage failures.
 Try with a RL agent for learning, and then changing the dataset avaliable
 I think we can get the same two main findings --- too much assistance, sucks
 but some assistance speeds up performance (other group shared this as well)
+
+two benefits: speed up learning & maintain safe / good set

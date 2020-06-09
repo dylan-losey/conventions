@@ -179,12 +179,12 @@ def main():
     mdp5 = [500.0, 40.0]
     mdp6 = [500.0, 1e3]
 
-    # curriculum = [mdp3, mdp3, mdp3, mdp3, mdp3]
-    curriculum = [mdp6, mdp6, mdp6, mdp6, mdp6]
+    curriculum = [mdp0, mdp1, mdp1, mdp1, mdp1]
+    # curriculum = [mdp6, mdp6, mdp6, mdp6, mdp6]
 
     for count, M in enumerate(curriculum):
 
-        dataset_M = fail_human(M[0], M[1], humanmodel, n_episodes)
+        dataset_M = success_human(M[0], M[1], humanmodel, n_episodes)
         n_datapoints = int(len(dataset_M) / 100.0)
 
         dataset_M = random.sample(dataset_M, k=min(n_datapoints,len(dataset_M)))
